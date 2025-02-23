@@ -22,4 +22,9 @@ public class Employee extends Person {
               empPagibig, empImmediateSupervisor, empStatus, empPosition, empBasicSalary, empRice,
               empPhone, empClothing, empMonthlyRate, empHourlyRate);
     }  
+    
+    @Override
+    public String getAccessLevel() {
+        return "Employee";
+    }
 }

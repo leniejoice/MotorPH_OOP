@@ -59,6 +59,8 @@ public abstract class Person {
         this.empHourlyRate = empHourlyRate;
     }
     
+    // Abstract method to get access level
+    public abstract String getAccessLevel();
 
     // Getters
     public int getEmpID() {

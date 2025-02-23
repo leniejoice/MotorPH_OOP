@@ -22,4 +22,8 @@ public class Finance extends Person{
               empPhone, empClothing, empMonthlyRate, empHourlyRate);
     }
    
+    @Override
+    public String getAccessLevel() {
+        return "Finance";
+    }
 }

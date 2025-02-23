@@ -22,4 +22,8 @@ public class IT extends Person{
               empPhone, empClothing, empMonthlyRate, empHourlyRate);
     }
    
+    @Override
+    public String getAccessLevel() {
+        return "IT";
+    }
 }

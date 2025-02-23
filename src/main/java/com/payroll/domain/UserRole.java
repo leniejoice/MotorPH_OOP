@@ -12,6 +12,7 @@ public class UserRole {
     
     int id;
     String role;
+    String accessLevel;
 
     public int getId() {
         return id;
@@ -27,6 +28,14 @@ public class UserRole {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getAccessLevel() {
+        return accessLevel;
+    }
+
+    public void setAccessLevel(String accessLevel) {
+        this.accessLevel = accessLevel;
     }
    
     public String toString(){
