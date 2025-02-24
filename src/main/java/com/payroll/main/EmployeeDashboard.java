@@ -6,7 +6,6 @@ package com.payroll.main;
 
 import com.payroll.domain.ComboItem;
 import com.payroll.domain.EmployeeAccount;
-import com.payroll.domain.EmployeeDetails;
 import com.payroll.domain.EmployeeHours;
 import com.payroll.domain.EmployeePosition;
 import com.payroll.domain.EmployeeStatus;
@@ -14,7 +13,7 @@ import com.payroll.domain.LeaveBalance;
 import com.payroll.domain.LeaveDetails;
 import com.payroll.domain.LeaveDetails.LeaveStatus;
 import com.payroll.domain.LeaveType;
-import com.payroll.services.EmployeeDetailsService;
+import com.payroll.domain.Person;
 import com.payroll.services.EmployeeAccountService;
 import com.payroll.services.LeaveDetailsService;
 import com.payroll.services.PayrollService;
@@ -44,7 +43,6 @@ public class EmployeeDashboard extends javax.swing.JFrame {
     private CardLayout cardLayout;
     private EmployeeAccount empAccount;
     private EmployeeAccountService empAccountService;
-    private EmployeeDetailsService empDetailsService;  // 
     private PayrollService payrollService;
     private LeaveDetailsService leaveService;
     private LeaveDetails leaveDetails;
@@ -57,7 +55,6 @@ public class EmployeeDashboard extends javax.swing.JFrame {
         this.dbConnection = new DatabaseConnection();
         updateUserLabels(empAccount);
         this.empAccountService = new EmployeeAccountService(this.dbConnection);
-        this.empDetailsService = new EmployeeDetailsService(this.dbConnection); 
         this.payrollService = new PayrollService(this.dbConnection);
         this.leaveService = new LeaveDetailsService(this.dbConnection);
         loadAllYears();

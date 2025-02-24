@@ -5,7 +5,7 @@
 package com.payroll.services;
 
 import com.payroll.domain.EmployeeAccount;
-import com.payroll.domain.EmployeeDetails;
+import com.payroll.domain.Person;
 import com.payroll.domain.UserRole;
 import com.payroll.util.DatabaseConnection;
 import java.sql.Connection;
@@ -62,7 +62,7 @@ public class EmployeeAccountService {
                     employeeAccount.setUserRole(role);
                     
                     int empID = resultSet.getInt("employee_id");
-                    EmployeeDetails employeeDetails = empDetailsService.getByEmpID(empID);
+                    Person employeeDetails = empDetailsService.getByEmpID(empID);
                     employeeAccount.setEmpDetails(employeeDetails);
                     employeeAccount.setEmpID(empID);
                     
@@ -95,7 +95,7 @@ public class EmployeeAccountService {
                     UserRole role = empRolesService.getByRolesId(roleID);
                     employeeAccount.setUserRole(role);
 
-                    EmployeeDetails employeeDetails = empDetailsService.getByEmpID(empID);
+                    Person employeeDetails = empDetailsService.getByEmpID(empID);
                     employeeAccount.setEmpDetails(employeeDetails);
                 }
                 
@@ -173,7 +173,7 @@ public class EmployeeAccountService {
                     employeeAccount.setUserRole(role);
 
                     int empID = resultSet.getInt("employee_id");
-                    EmployeeDetails employeeDetails = empDetailsService.getByEmpID(empID);
+                    Person employeeDetails = empDetailsService.getByEmpID(empID);
                     employeeAccount.setEmpDetails(employeeDetails);
                     allEmployeeAccount.add(employeeAccount);
                 }
@@ -231,7 +231,7 @@ public class EmployeeAccountService {
     } 
    
     
-    public EmployeeDetails saveUserAccount(EmployeeAccount empAccount,EmployeeDetails empDetails){
+    public Person saveUserAccount(EmployeeAccount empAccount,Person empDetails){
         if (connection != null) {
             String Query = "INSERT into public.employee_account (employee_id, username, password,role_id) VALUES (?, ?, ?,?)";
             try {

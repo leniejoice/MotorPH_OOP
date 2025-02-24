@@ -13,7 +13,7 @@ public class EmployeeAccount {
     private int empID;
     private String empUserName; 
     private String empPassword;
-    private EmployeeDetails empDetails;
+    private Person empDetails;
     private UserRole userRole;
     private LeaveDetails leaveDetail;
 
@@ -65,11 +65,11 @@ public class EmployeeAccount {
         this.empPassword = empPassword;
     }
     
-    public EmployeeDetails getEmpDetails() {
+    public Person getEmpDetails() {
         return empDetails;
     }
 
-    public void setEmpDetails(EmployeeDetails empDetails) {
+    public void setEmpDetails(Person empDetails) {
         this.empDetails = empDetails;
     }
     
