@@ -12,7 +12,7 @@ import java.util.Date;
  *
  * @author leniejoice 
  */
-public class EmployeeHours {
+public class Attendance {
 
 
     private int empID;

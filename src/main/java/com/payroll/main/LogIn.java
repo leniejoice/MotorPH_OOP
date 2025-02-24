@@ -7,7 +7,7 @@ package com.payroll.main;
 import com.payroll.domain.EmployeeAccount;
 import javax.swing.JOptionPane;
 import com.payroll.main.HRDashboard;
-import com.payroll.services.EmployeeAccountService;
+import com.payroll.services.ITService;
 import com.payroll.util.DatabaseConnection;
 import javax.swing.JOptionPane;
 import java.awt.Toolkit;
@@ -31,11 +31,11 @@ public class LogIn extends javax.swing.JFrame {
      * Creates new form LogIn
      */
     
-    private EmployeeAccountService empAccountService;
+    private ITService empAccountService;
     public LogIn() {
         DatabaseConnection dbConnection = new DatabaseConnection();
         dbConnection.connect();
-        empAccountService= new EmployeeAccountService(dbConnection);
+        empAccountService= new ITService(dbConnection);
         initComponents();
        
     }

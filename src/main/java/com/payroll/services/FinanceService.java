@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.payroll.services;
-import com.payroll.domain.EmployeeHours;
+import com.payroll.domain.Attendance;
 import com.payroll.util.DatabaseConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,16 +23,16 @@ import java.util.logging.Logger;
  *
  * @author Computer leniejoice
  */
-public class PayrollService {
+public class FinanceService {
     private Connection connection;
     
-    public PayrollService(DatabaseConnection dbConnection){
+    public FinanceService(DatabaseConnection dbConnection){
         this.connection = dbConnection.connect();    
     }
     
     
-    public List<EmployeeHours> getEmployeeHours(int empID, Date from, Date to){
-        List<EmployeeHours> empHours = new ArrayList<>();
+    public List<Attendance> getEmployeeHours(int empID, Date from, Date to){
+        List<Attendance> empHours = new ArrayList<>();
         if (connection != null){
             try {
                 String Query = "SELECT * FROM public.employee_hours where employee_id = ? and date between ? and ?";
@@ -49,7 +49,7 @@ public class PayrollService {
                    LocalTime timeOut = LocalDateTime.ofInstant(timeOutDate.toInstant(),ZoneId.systemDefault()).toLocalTime();
                     
                    if (!timeIn.equals(LocalTime.MIDNIGHT) || !timeOut.equals(LocalTime.MIDNIGHT)) {
-                    EmployeeHours employeeHours = new EmployeeHours();
+                    Attendance employeeHours = new Attendance();
                     employeeHours.setEmpID(resultSet.getInt("employee_id"));
                     employeeHours.setDate(resultSet.getDate("date"));
                     employeeHours.setTimeIn(timeIn);
@@ -60,7 +60,7 @@ public class PayrollService {
                     }
                 }     
             } catch (SQLException ex) {
-                Logger.getLogger(PayrollService.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(FinanceService.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return empHours;   

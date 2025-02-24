@@ -21,22 +21,20 @@ import javax.management.Query;
  *
  * @author leniejoice
  */
-public class EmployeeAccountService {
+public class ITService {
     private Connection connection;
     private DatabaseConnection dbConnection;
-    private EmployeeDetailsService empDetailsService;
-    private EmployeeRolesService empRolesService;
-    private LeaveDetailsService leaveDetailsService;
+    private HRService hrService;
+    private EmployeeService employeeeService;
     
     
-    public EmployeeAccountService(DatabaseConnection dbConnection){
+    public ITService(DatabaseConnection dbConnection){
         this.connection = dbConnection.connect();  
-        this.empDetailsService = new EmployeeDetailsService(dbConnection);
-        this.empRolesService = new EmployeeRolesService(dbConnection);
-        this.leaveDetailsService = new LeaveDetailsService(dbConnection);
+        this.hrService = new HRService(dbConnection);
+        this.employeeeService = new EmployeeService(dbConnection);
     }
 
-    public EmployeeAccountService() {
+    public ITService() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
@@ -58,11 +56,11 @@ public class EmployeeAccountService {
                     employeeAccount.setEmpPassword(resultSet.getString("password"));
                     
                     int roleID = resultSet.getInt("role_id");
-                    UserRole role = empRolesService.getByRolesId(roleID);
+                    UserRole role = getByRolesId(roleID);
                     employeeAccount.setUserRole(role);
                     
                     int empID = resultSet.getInt("employee_id");
-                    EmployeeDetails employeeDetails = empDetailsService.getByEmpID(empID);
+                    EmployeeDetails employeeDetails = hrService.getByEmpID(empID);
                     employeeAccount.setEmpDetails(employeeDetails);
                     employeeAccount.setEmpID(empID);
                     
@@ -92,10 +90,10 @@ public class EmployeeAccountService {
                     employeeAccount.setEmpPassword(resultSet.getString("password"));
                     
                     int roleID = resultSet.getInt("role_id");
-                    UserRole role = empRolesService.getByRolesId(roleID);
+                    UserRole role = getByRolesId(roleID);
                     employeeAccount.setUserRole(role);
 
-                    EmployeeDetails employeeDetails = empDetailsService.getByEmpID(empID);
+                    EmployeeDetails employeeDetails = hrService.getByEmpID(empID);
                     employeeAccount.setEmpDetails(employeeDetails);
                 }
                 
@@ -169,11 +167,11 @@ public class EmployeeAccountService {
                     employeeAccount.setEmpPassword(resultSet.getString("password"));
                     
                     int roleID = resultSet.getInt("role_id");
-                    UserRole role = empRolesService.getByRolesId(roleID);
+                    UserRole role = getByRolesId(roleID);
                     employeeAccount.setUserRole(role);
 
                     int empID = resultSet.getInt("employee_id");
-                    EmployeeDetails employeeDetails = empDetailsService.getByEmpID(empID);
+                    EmployeeDetails employeeDetails = hrService.getByEmpID(empID);
                     employeeAccount.setEmpDetails(employeeDetails);
                     allEmployeeAccount.add(employeeAccount);
                 }

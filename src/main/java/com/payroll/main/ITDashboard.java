@@ -7,23 +7,22 @@ package com.payroll.main;
 import com.payroll.domain.ComboItem;
 import com.payroll.domain.EmployeeAccount;
 import com.payroll.domain.EmployeeDetails;
-import com.payroll.domain.EmployeeHours;
+import com.payroll.domain.Attendance;
 import com.payroll.domain.EmployeePosition;
 import com.payroll.domain.EmployeeStatus;
 import com.payroll.domain.LeaveBalance;
 import com.payroll.domain.LeaveDetails;
 import com.payroll.domain.UserRole;
-import com.payroll.services.EmployeeDetailsService;
-import com.payroll.services.EmployeeAccountService;
-import com.payroll.services.EmployeeRolesService;
-import com.payroll.services.LeaveDetailsService;
-import com.payroll.services.PayrollService;
+import com.payroll.services.HRService;
+import com.payroll.services.ITService;
+import com.payroll.services.EmployeeService;
+import com.payroll.services.FinanceService;
 import com.payroll.table.TableActionCellEditor;
 import com.payroll.table.TableActionCellRender;
 import com.payroll.util.DatabaseConnection;
 import com.payroll.table.TableActionCellRender;
 import com.payroll.table.TableActionEvent;
-import com.payroll.util.PayrollUtils;
+import com.payroll.domain.SalaryCalculation;
 import static japgolly.scalajs.react.vdom.all.table;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -52,9 +51,8 @@ public class ITDashboard extends javax.swing.JFrame {
     private DatabaseConnection dbConnection;
     private CardLayout cardLayout;
     private EmployeeAccount empAccount;
-    private EmployeeAccountService empAccountService;
-    private EmployeeDetailsService empDetailsService;
-    private EmployeeRolesService empRoleService;
+    private ITService empAccountService;
+    private HRService empDetailsService;
     private UserRole userRole;
     private Integer employeeSearchID;
     
@@ -64,9 +62,8 @@ public class ITDashboard extends javax.swing.JFrame {
         this.empAccount=empAccount;
         this.dbConnection = new DatabaseConnection();
         updateUserLabels(empAccount);
-        this.empAccountService = new EmployeeAccountService(this.dbConnection);
-        this.empDetailsService = new EmployeeDetailsService(this.dbConnection);  
-        this.empRoleService = new EmployeeRolesService(this.dbConnection);
+        this.empAccountService = new ITService(this.dbConnection);
+        this.empDetailsService = new HRService(this.dbConnection);  
         loadAllRoles();
         
         // Enforce access levels based on user roles

@@ -22,12 +22,12 @@ import java.util.List;
  *
  * @author leniejoice
  */
-public class LeaveDetailsService {
+public class EmployeeService {
     private Connection connection;
     private DatabaseConnection dbConnection;
     
     
-    public LeaveDetailsService(DatabaseConnection dbConnection){
+    public EmployeeService(DatabaseConnection dbConnection){
         this.connection = dbConnection.connect();    
     }
     

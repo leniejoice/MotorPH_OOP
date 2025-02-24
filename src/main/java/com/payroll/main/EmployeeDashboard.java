@@ -7,19 +7,19 @@ package com.payroll.main;
 import com.payroll.domain.ComboItem;
 import com.payroll.domain.EmployeeAccount;
 import com.payroll.domain.EmployeeDetails;
-import com.payroll.domain.EmployeeHours;
+import com.payroll.domain.Attendance;
 import com.payroll.domain.EmployeePosition;
 import com.payroll.domain.EmployeeStatus;
 import com.payroll.domain.LeaveBalance;
 import com.payroll.domain.LeaveDetails;
 import com.payroll.domain.LeaveDetails.LeaveStatus;
 import com.payroll.domain.LeaveType;
-import com.payroll.services.EmployeeDetailsService;
-import com.payroll.services.EmployeeAccountService;
-import com.payroll.services.LeaveDetailsService;
-import com.payroll.services.PayrollService;
+import com.payroll.services.HRService;
+import com.payroll.services.ITService;
+import com.payroll.services.EmployeeService;
+import com.payroll.services.FinanceService;
 import com.payroll.util.DatabaseConnection;
-import com.payroll.util.PayrollUtils;
+import com.payroll.domain.SalaryCalculation;
 import java.awt.CardLayout;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -43,10 +43,10 @@ public class EmployeeDashboard extends javax.swing.JFrame {
     private DatabaseConnection dbConnection;
     private CardLayout cardLayout;
     private EmployeeAccount empAccount;
-    private EmployeeAccountService empAccountService;
-    private EmployeeDetailsService empDetailsService;  // 
-    private PayrollService payrollService;
-    private LeaveDetailsService leaveService;
+    private ITService empAccountService;
+    private HRService empDetailsService;  // 
+    private FinanceService payrollService;
+    private EmployeeService leaveService;
     private LeaveDetails leaveDetails;
     
     
@@ -56,10 +56,10 @@ public class EmployeeDashboard extends javax.swing.JFrame {
         this.empAccount=empAccount;
         this.dbConnection = new DatabaseConnection();
         updateUserLabels(empAccount);
-        this.empAccountService = new EmployeeAccountService(this.dbConnection);
-        this.empDetailsService = new EmployeeDetailsService(this.dbConnection); 
-        this.payrollService = new PayrollService(this.dbConnection);
-        this.leaveService = new LeaveDetailsService(this.dbConnection);
+        this.empAccountService = new ITService(this.dbConnection);
+        this.empDetailsService = new HRService(this.dbConnection); 
+        this.payrollService = new FinanceService(this.dbConnection);
+        this.leaveService = new EmployeeService(this.dbConnection);
         loadAllYears();
         loadAllMonths();
         loadAllLeaveTypes();
@@ -137,34 +137,34 @@ public class EmployeeDashboard extends javax.swing.JFrame {
         ricePayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpRice()));
         phonePayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpPhone()));
         clothingPayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpClothing()));
-        totalAllowPayLabelValue.setText(String.valueOf(PayrollUtils.getTotalAllowance(empAccount.getEmpDetails())));
+        totalAllowPayLabelValue.setText(String.valueOf(SalaryCalculation.getTotalAllowance(empAccount.getEmpDetails())));
         basicSalaryPayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpBasicSalary()));
     }   
     
-    private void updatePayrollLabels(List<EmployeeHours> employeeHours){
+    private void updatePayrollLabels(List<Attendance> employeeHours){
         if(employeeHours.isEmpty()){
             resetPayrollLabels();
         }else{
-            totalHoursPayLabelValue.setText(PayrollUtils.getFormattedTotalHoursWorked(employeeHours));
+            totalHoursPayLabelValue.setText(SalaryCalculation.getFormattedTotalHoursWorked(employeeHours));
 
-            double basicSalary = PayrollUtils.getBasicSalary(employeeHours, empAccount);
+            double basicSalary = SalaryCalculation.getBasicSalary(employeeHours, empAccount);
             computedSalaryLabelValue.setText(String.format("%.2f",basicSalary));
 
-            double grossPay = PayrollUtils.getGrossSalary(employeeHours, empAccount);
+            double grossPay = SalaryCalculation.getGrossSalary(employeeHours, empAccount);
             grossSalaryPayLabelValue.setText(String.format("%.2f", grossPay));
 
             double sssContri = payrollService.calculateSssContribution(basicSalary);
 
             // Contributions
-            philhealthContriPayLabelValue.setText(String.format("%.2f", PayrollUtils.calculatePhilHealthContribution(grossPay)));
-            pagibigContriPayLabelValue.setText(String.format("%.2f", PayrollUtils.calculatePagibigContribution(grossPay)));
+            philhealthContriPayLabelValue.setText(String.format("%.2f", SalaryCalculation.calculatePhilHealthContribution(grossPay)));
+            pagibigContriPayLabelValue.setText(String.format("%.2f", SalaryCalculation.calculatePagibigContribution(grossPay)));
             sssContriPayLabelValue.setText(String.format("%.2f", sssContri));
-            totalDeductionsPayLabelValue.setText(String.format("%.2f", PayrollUtils.getTotalDeductions(grossPay,sssContri)));
+            totalDeductionsPayLabelValue.setText(String.format("%.2f", SalaryCalculation.getTotalDeductions(grossPay,sssContri)));
 
             // Tax and Net Pay
-            taxableIncomePayLabelValue.setText(String.format("%.2f", PayrollUtils.getTaxableIncome(grossPay,sssContri)));
-            taxPayLabelValue.setText(String.format("%.2f", PayrollUtils.calculateWithholdingTax(grossPay)));
-            netPayLabelValue.setText(String.format("%.2f", PayrollUtils.getNetPay(grossPay,sssContri)));
+            taxableIncomePayLabelValue.setText(String.format("%.2f", SalaryCalculation.getTaxableIncome(grossPay,sssContri)));
+            taxPayLabelValue.setText(String.format("%.2f", SalaryCalculation.calculateWithholdingTax(grossPay)));
+            netPayLabelValue.setText(String.format("%.2f", SalaryCalculation.getNetPay(grossPay,sssContri)));
         }
     }
     
@@ -1725,7 +1725,7 @@ public class EmployeeDashboard extends javax.swing.JFrame {
             Integer year = ((ComboItem)yearDropdown.getSelectedItem()).getKey();
 
             if(monthValue != null & year != null){
-                List<EmployeeHours> empHours = getEmployeeHours(monthValue,year);
+                List<Attendance> empHours = getEmployeeHours(monthValue,year);
                 populateAttendanceTable(empHours);
                 updatePayrollLabels(empHours);
             }
@@ -1738,18 +1738,18 @@ public class EmployeeDashboard extends javax.swing.JFrame {
             Integer year = ((ComboItem)yearDropdown.getSelectedItem()).getKey();
 
             if(monthValue != null & year != null){
-                List<EmployeeHours> empHours = getEmployeeHours(monthValue,year);
+                List<Attendance> empHours = getEmployeeHours(monthValue,year);
                 populateAttendanceTable(empHours);
                 updatePayrollLabels(empHours);
             }
         }    
     }//GEN-LAST:event_yearDropdownActionPerformed
 
-    private void populateAttendanceTable(List<EmployeeHours> empHours){
+    private void populateAttendanceTable(List<Attendance> empHours){
         DefaultTableModel model = (DefaultTableModel) attendanceTable.getModel();
         model.setRowCount(0);
 
-        for(EmployeeHours employeeHours : empHours) {
+        for(Attendance employeeHours : empHours) {
             Vector<Object> rowData = new Vector<>();
             rowData.add(employeeHours.getDate());
             rowData.add(employeeHours.getTimeIn());
@@ -1793,7 +1793,7 @@ public class EmployeeDashboard extends javax.swing.JFrame {
                                         
     
     
-    private List<EmployeeHours> getEmployeeHours(int month, int year){
+    private List<Attendance> getEmployeeHours(int month, int year){
        Calendar dateFrom = Calendar.getInstance();
        dateFrom.set(Calendar.MONTH,month);
        dateFrom.set(Calendar.YEAR, year);

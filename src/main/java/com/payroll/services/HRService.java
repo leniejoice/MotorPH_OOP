@@ -4,7 +4,7 @@
  */
 package com.payroll.services;
 import com.payroll.domain.EmployeeDetails;
-import com.payroll.domain.EmployeeHours;
+import com.payroll.domain.Attendance;
 import com.payroll.domain.EmployeePosition;
 import com.payroll.domain.EmployeeStatus;
 import com.payroll.util.DatabaseConnection;
@@ -23,16 +23,16 @@ import javax.swing.JComboBox;
  *
  * @author leniejoice
  */
-public class EmployeeDetailsService {
+public class HRService {
     
     private Connection connection;
     private DatabaseConnection dbConnection;
     
-    public EmployeeDetailsService(DatabaseConnection dbConnection){
+    public HRService(DatabaseConnection dbConnection){
         this.connection = dbConnection.connect();   
     }
 
-    public EmployeeDetailsService() {
+    public HRService() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
@@ -395,8 +395,8 @@ public class EmployeeDetailsService {
         return employeeDetails;
     } 
 
-    public List<EmployeeHours> getEmpHoursByEmpID(int empID){
-        List<EmployeeHours> empHours = new ArrayList<>();
+    public List<Attendance> getEmpHoursByEmpID(int empID){
+        List<Attendance> empHours = new ArrayList<>();
         if (connection != null) {
             String Query = "SELECT * FROM employee_hours where employee_id = ?";
             try {
@@ -405,7 +405,7 @@ public class EmployeeDetailsService {
                 ResultSet resultSet = preparedStatement.executeQuery();
 
                 while (resultSet.next()) {
-                    EmployeeHours e = new EmployeeHours();
+                    Attendance e = new Attendance();
                     e.setEmpID(resultSet.getInt("employee_id"));
                     e.setDate(resultSet.getDate("date"));
                     e.setId(resultSet.getInt("id"));
