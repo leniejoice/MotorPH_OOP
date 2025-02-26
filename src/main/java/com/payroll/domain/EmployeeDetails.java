@@ -10,10 +10,10 @@ import java.util.Date;
  *
  * @author leniejoice
  */
-public class Employee extends Person {
+public class EmployeeDetails extends Person {
     
-    // Constructor that initializes Employee attributes using superclass constructor
-    public Employee(int empID, String lastName, String firstName, String empAddress, Date empBirthday,
+    // Constructor that initializes EmployeeDetails attributes using superclass constructor
+    public EmployeeDetails(int empID, String lastName, String firstName, String empAddress, Date empBirthday,
                     String empPhoneNumber, String empSSS, String empTIN, long empPhilHealth,
                     long empPagibig, Person empImmediateSupervisor, EmployeeStatus empStatus,
                     EmployeePosition empPosition, double empBasicSalary, double empRice,

@@ -34,7 +34,7 @@ public abstract class Person {
     private double empHourlyRate;
     
     // Constructor
-    public Person(int empID, String lastName, String firstName, String empAddress, Date empBirthday,
+    public Employeent empID, String lastName, String firstName, String empAddress, Date empBirthday,
                   String empPhoneNumber, String empSSS, String empTIN, long empPhilHealth,
                   long empPagibig, Person empImmediateSupervisor, EmployeeStatus empStatus,
                   EmployeePosition empPosition, double empBasicSalary, double empRice,
