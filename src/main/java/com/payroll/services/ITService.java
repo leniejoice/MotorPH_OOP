@@ -4,7 +4,7 @@
  */
 package com.payroll.services;
 
-import com.payroll.domain.EmployeeAccount;
+import com.payroll.domain.IT;
 import com.payroll.domain.Person;
 import com.payroll.domain.UserRole;
 import com.payroll.util.DatabaseConnection;
@@ -21,26 +21,26 @@ import javax.management.Query;
  *
  * @author leniejoice
  */
-public class ITAccountService {
+public class ITService {
     private Connection connection;
     private DatabaseConnection dbConnection;
     private HRService hrService;
     private EmployeeService leaveDetailsService;
     
     
-    public ITAccountService(DatabaseConnection dbConnection){
+    public ITService(DatabaseConnection dbConnection){
         this.connection = dbConnection.connect();  
         this.hrService = new HRService(dbConnection);
         this.leaveDetailsService = new EmployeeService(dbConnection);
     }
 
-    public ITAccountService() {
+    public ITService() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
 
-    public EmployeeAccount getUserAccount(String username, String password){
-        EmployeeAccount employeeAccount = null ;
+    public IT getUserAccount(String username, String password){
+        IT employeeAccount = null ;
         if (connection != null) {
             String Query = "SELECT * FROM employee_account where username = ? and password = ?";
             try {
@@ -50,7 +50,7 @@ public class ITAccountService {
                 ResultSet resultSet = preparedStatement.executeQuery();
                 
                 if(resultSet.next()){
-                    employeeAccount = new EmployeeAccount();
+                    employeeAccount = new IT();
                     employeeAccount.setAccountID(resultSet.getInt("account_id"));
                     employeeAccount.setEmpUserName(resultSet.getString("username"));
                     employeeAccount.setEmpPassword(resultSet.getString("password"));
@@ -75,8 +75,8 @@ public class ITAccountService {
         return employeeAccount;
     } 
     
-    public EmployeeAccount getByEmpID(int empID){
-        EmployeeAccount employeeAccount = null ;
+    public IT getByEmpID(int empID){
+        IT employeeAccount = null ;
             if (connection != null) {
             String Query = "SELECT * FROM public.employee_account where employee_id = ?";
             try {
@@ -84,7 +84,7 @@ public class ITAccountService {
                 preparedStatement.setInt(1,empID);
                 ResultSet resultSet = preparedStatement.executeQuery();
                 while(resultSet.next()){
-                    employeeAccount = new EmployeeAccount();
+                    employeeAccount = new IT();
                     employeeAccount.setAccountID(resultSet.getInt("account_id"));
                     employeeAccount.setEmpUserName(resultSet.getString("username"));
                     employeeAccount.setEmpPassword(resultSet.getString("password"));
@@ -106,7 +106,7 @@ public class ITAccountService {
         return employeeAccount;
     } 
     
-    public void updateEmployeeAccount(EmployeeAccount empAccount){
+    public void updateEmployeeAccount(IT empAccount){
         if(connection !=null){
             String Query = "UPDATE public.employee_account SET username = ?, password = ? WHERE employee_id = ?";
         
@@ -125,7 +125,7 @@ public class ITAccountService {
         }
     }
     
-    public void updateEmployeeAccountIT(EmployeeAccount empAccount) {
+    public void updateEmployeeAccountIT(IT empAccount) {
         if (connection == null) {
             throw new IllegalStateException("Database connection is not established.");
         }
@@ -153,15 +153,15 @@ public class ITAccountService {
     }
     
      
-    public List<EmployeeAccount> getAllUserAccount(){
-        List<EmployeeAccount> allEmployeeAccount = new ArrayList<>();
+    public List<IT> getAllUserAccount(){
+        List<IT> allEmployeeAccount = new ArrayList<>();
             if (connection != null) {
             String Query = "SELECT * FROM public.employee_account";
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(Query);
                 ResultSet resultSet = preparedStatement.executeQuery();
                 while (resultSet.next()){
-                    EmployeeAccount employeeAccount = new EmployeeAccount();
+                    IT employeeAccount = new IT();
                     employeeAccount.setAccountID(resultSet.getInt("account_id"));
                     employeeAccount.setEmpUserName(resultSet.getString("username"));
                     employeeAccount.setEmpPassword(resultSet.getString("password"));
@@ -229,7 +229,7 @@ public class ITAccountService {
     } 
    
     
-    public Person saveUserAccount(EmployeeAccount empAccount,Person empDetails){
+    public Person saveUserAccount(IT empAccount,Person empDetails){
         if (connection != null) {
             String Query = "INSERT into public.employee_account (employee_id, username, password,role_id) VALUES (?, ?, ?,?)";
             try {
@@ -273,7 +273,7 @@ public class ITAccountService {
     }   
        
     
-    public void changePassword(EmployeeAccount empAccount){
+    public void changePassword(IT empAccount){
         if(connection !=null){
             String Query = "UPDATE public.employee_account SET password = ? where employee_id = ?";
         

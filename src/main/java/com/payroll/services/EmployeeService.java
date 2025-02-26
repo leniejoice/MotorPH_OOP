@@ -5,8 +5,8 @@
 package com.payroll.services;
 
 import com.payroll.domain.LeaveBalance;
-import com.payroll.domain.LeaveDetails;
-import com.payroll.domain.LeaveDetails.LeaveStatus;
+import com.payroll.domain.HR;
+import com.payroll.domain.HR.LeaveStatus;
 import com.payroll.domain.LeaveType;
 import com.payroll.util.DatabaseConnection;
 import java.sql.Connection;
@@ -155,7 +155,7 @@ public class EmployeeService {
         
     }
     
-    public LeaveDetails saveLeave(LeaveDetails leaveDetails){
+    public HR saveLeave(HR leaveDetails){
         //java.sql.Date birthDate = empDetails.getEmpBirthday()!=null? new java.sql.Date(empDetails.getEmpBirthday().getTime()):null;
         java.sql.Date dateFrom = leaveDetails.getDateFrom()!=null? new java.sql.Date(leaveDetails.getDateFrom().getTime()):null;
         java.sql.Date dateTo = leaveDetails.getDateTo()!=null? new java.sql.Date(leaveDetails.getDateTo().getTime()):null;
@@ -173,7 +173,7 @@ public class EmployeeService {
             preparedStatement.setDate(4,dateTo);
             preparedStatement.setInt(5,leaveDetails.getTotalDays());
             preparedStatement.setString(6,leaveDetails.getReason());
-            preparedStatement.setString(7,leaveDetails.getStatus());
+            preparedStatement.setString(7,leaveDetails.getStatus().name());
             preparedStatement.setInt(8,leaveDetails.getEmpID());
 
 
@@ -181,7 +181,7 @@ public class EmployeeService {
                 if(affectedrows > 0){
                  try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
-                        leaveDetails.setId(generatedKeys.getInt(1));
+                        leaveDetails.setLeaveId(generatedKeys.getInt(1));
                     } else {
                         throw new SQLException("Leave request failed, no ID obtained.");
                      }
@@ -227,8 +227,8 @@ public class EmployeeService {
         }                              
     }   
     
-    public List<LeaveDetails> getLeavesByEmployee(int empID){
-        List<LeaveDetails> allLeaves = new ArrayList<>();
+    public List<HR> getLeavesByEmployee(int empID){
+        List<HR> allLeaves = new ArrayList<>();
             if (connection != null) {
             String Query = "SELECT * FROM public.leave_details where employee_id = ? order by id ASC";
             try {
@@ -236,7 +236,7 @@ public class EmployeeService {
                 preparedStatement.setInt(1,empID);
                 ResultSet resultSet = preparedStatement.executeQuery();
                 while (resultSet.next()){
-                    LeaveDetails leaveDetails = toLeaveDetails(resultSet);
+                    HR leaveDetails = toLeaveDetails(resultSet);
                     allLeaves.add(leaveDetails);
                 }
                 resultSet.close();
@@ -249,8 +249,8 @@ public class EmployeeService {
  
     }
     
-    public List<LeaveDetails> getAllLeaveRequestByStatus(LeaveStatus leaveStatus){
-        List<LeaveDetails> allLeaveRequest = new ArrayList<>();
+    public List<HR> getAllLeaveRequestByStatus(LeaveStatus leaveStatus){
+        List<HR> allLeaveRequest = new ArrayList<>();
             if (connection != null) {
             String Query = "SELECT * FROM public.leave_details  where status = ? order by id ASC";
             try {
@@ -258,7 +258,7 @@ public class EmployeeService {
                 preparedStatement.setString(1,leaveStatus.name());
                 ResultSet resultSet = preparedStatement.executeQuery();
                 while (resultSet.next()){
-                    LeaveDetails leaveDetails = toLeaveDetails(resultSet);
+                    HR leaveDetails = toLeaveDetails(resultSet);
                     allLeaveRequest.add(leaveDetails);
                 }
                 resultSet.close();
@@ -287,17 +287,17 @@ public class EmployeeService {
     }
     
     
-    private LeaveDetails toLeaveDetails(ResultSet resultSet) 
+    private HR toLeaveDetails(ResultSet resultSet) 
         throws SQLException {
-        LeaveDetails leaveDetails = new LeaveDetails();
-            leaveDetails.setId(resultSet.getInt("id"));
+        HR leaveDetails = new HR();
+            leaveDetails.setLeaveId(resultSet.getInt("id"));
             leaveDetails.setEmpID(resultSet.getInt("employee_id"));
             leaveDetails.setSubject(resultSet.getString("subject"));
             leaveDetails.setDateFrom(resultSet.getDate("date_from"));
             leaveDetails.setDateTo(resultSet.getDate("date_to"));
             leaveDetails.setTotalDays(resultSet.getInt("total_days"));
             leaveDetails.setReason(resultSet.getString("reason"));
-            leaveDetails.setStatus(resultSet.getString("status"));
+            leaveDetails.setStatus(LeaveStatus.valueOf(resultSet.getString("status")));
             
             int leaveTypeId  = resultSet.getInt("type");
             if (leaveTypeId > 0){

@@ -5,16 +5,17 @@
 package com.payroll.main;
 
 import com.payroll.domain.ComboItem;
-import com.payroll.domain.EmployeeAccount;
+import com.payroll.domain.IT;
 import com.payroll.domain.Person;
-import com.payroll.domain.Attendance;
+import com.payroll.domain.Employee;
 import com.payroll.domain.EmployeePosition;
 import com.payroll.domain.EmployeeStatus;
+import com.payroll.domain.Finance;
 import com.payroll.domain.LeaveBalance;
-import com.payroll.domain.LeaveDetails;
+import com.payroll.domain.HR;
 import com.payroll.domain.SalaryCalculation;
 import com.payroll.services.HRService;
-import com.payroll.services.ITAccountService;
+import com.payroll.services.ITService;
 import com.payroll.services.EmployeeService;
 import com.payroll.services.FinanceService;
 import com.payroll.table.TableActionCellEditor;
@@ -22,7 +23,7 @@ import com.payroll.table.TableActionCellRender;
 import com.payroll.util.DatabaseConnection;
 import com.payroll.table.TableActionCellRender;
 import com.payroll.table.TableActionEvent;
-import com.payroll.util.SalaryCalculation;
+import com.payroll.domain.SalaryCalculation;
 import static japgolly.scalajs.react.vdom.all.table;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -48,20 +49,20 @@ import org.apache.commons.lang3.StringUtils;
 public class FinanceDashboard extends javax.swing.JFrame {
     private DatabaseConnection dbConnection;
     private CardLayout cardLayout;
-    private EmployeeAccount empAccount;
-    private ITAccountService empAccountService;
+    private IT empAccount;
+    private ITService empAccountService;
     private HRService hrService;
     private FinanceService payrollService;
     private EmployeeService leaveDetailsService;
     private Integer employeeSearchID;
     
-    public FinanceDashboard(EmployeeAccount empAccount) {
+    public FinanceDashboard(IT empAccount) {
         initComponents();
         cardLayout = (CardLayout)(mphCards.getLayout());
         this.empAccount=empAccount;
         this.dbConnection = new DatabaseConnection();
         updateUserLabels(empAccount);
-        this.empAccountService = new ITAccountService(this.dbConnection);
+        this.empAccountService = new ITService(this.dbConnection);
         this.hrService = new HRService(this.dbConnection);  
         this.payrollService = new FinanceService(this.dbConnection);
         this. leaveDetailsService = new EmployeeService(this.dbConnection);
@@ -71,7 +72,7 @@ public class FinanceDashboard extends javax.swing.JFrame {
                 DefaultTableModel model = (DefaultTableModel) leaveManagementTable.getModel();
                 int leaveId = (int) model.getValueAt(row, 0); 
                 int empID = (int) model.getValueAt(row, 1); 
-                leaveDetailsService.updateLeaveRequestStatus(LeaveDetails.LeaveStatus.APPROVED, leaveId);
+                leaveDetailsService.updateLeaveRequestStatus(HR.LeaveStatus.APPROVED, leaveId);
                 updateLeaveBalance(empID);
                 refreshLeaveManagementTable();
             }
@@ -81,7 +82,7 @@ public class FinanceDashboard extends javax.swing.JFrame {
                 DefaultTableModel model = (DefaultTableModel) leaveManagementTable.getModel();
                 int leaveId = (int) model.getValueAt(row, 0);
                 int empID = (int) model.getValueAt(row, 1); 
-                leaveDetailsService.updateLeaveRequestStatus(LeaveDetails.LeaveStatus.DECLINED, leaveId);
+                leaveDetailsService.updateLeaveRequestStatus(HR.LeaveStatus.DECLINED, leaveId);
                 updateLeaveBalance(empID);
                 refreshLeaveManagementTable(); 
             }
@@ -98,70 +99,94 @@ public class FinanceDashboard extends javax.swing.JFrame {
     public FinanceDashboard(){
         
     }
-    public EmployeeAccount getEmpAccount() {
+    public IT getEmpAccount() {
         return empAccount;
     }
     
-     public EmployeeAccount getUsername() {
+     public IT getUsername() {
         return empAccount;
     }
 
-    public void setEmpAccount(EmployeeAccount empAccount) {
+    public void setEmpAccount(IT empAccount) {
         this.empAccount = empAccount;
     }
     
     private void updateLeaveBalance(int empID){
-        List<LeaveDetails> leaveDetails =  leaveDetailsService.getLeavesByEmployee(empID);
+        List<HR> leaveDetails =  leaveDetailsService.getLeavesByEmployee(empID);
         LeaveBalance balance = new LeaveBalance();
         balance.setEmpID(empID);
         balance.updateLeaveBalance(leaveDetails);
         leaveDetailsService.updateLeaveBalance(balance);
     }
     
-    private void updateUserLabels(EmployeeAccount empAccount) {
+    private void updateUserLabels(IT empAccount) {
+        if (empAccount == null) {
+        System.err.println("Error: empAccount is null");
+        return;
+    }
+
         DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        String tin = empAccount.getEmpDetails().getEmpTIN() != null ? empAccount.getEmpDetails().getEmpTIN() : "";
-        String phone = empAccount.getEmpDetails().getEmpPhoneNumber() != null ? empAccount.getEmpDetails().getEmpPhoneNumber(): "" ;
-        String pagIbig = empAccount.getEmpDetails().getEmpPagibig() != 0 ? String.valueOf(empAccount.getEmpDetails().getEmpPagibig()) : "";
-        String philhealth = empAccount.getEmpDetails().getEmpPhilHealth() != 0 ? String.valueOf(empAccount.getEmpDetails().getEmpPhilHealth()) : "";
-        String sss = empAccount.getEmpDetails().getEmpSSS() !=null ? empAccount.getEmpDetails().getEmpSSS() : "";
-      
-        
-        usernameLabel.setText("@"+ empAccount.getEmpUserName()); 
-        fullNameValue.setText(empAccount.getEmpDetails().getFormattedName());
-        fullNameValue2.setText(empAccount.getEmpDetails().getFormattedName());
-        empNumValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpID()));
-        empIDLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpID()));
-        addressLabelValue.setText(empAccount.getEmpDetails().getEmpAddress());
-        phoneLabelValue.setText(phone);
-        basicSalaryLabelValue.setText("PHP " + String.valueOf(empAccount.getEmpDetails().getEmpBasicSalary()));
-        riceLabelValue.setText("PHP " + String.valueOf(empAccount.getEmpDetails().getEmpRice()));
-        phoneAllowanceValue.setText("PHP " + String.valueOf(empAccount.getEmpDetails().getEmpPhone()));
-        clothingLabelValue.setText("PHP " + String.valueOf(empAccount.getEmpDetails().getEmpClothing()));
-        hourlyrateLabelValue.setText("PHP " + String.valueOf(empAccount.getEmpDetails().getEmpHourlyRate()));
-        tinLabelValue.setText(tin);
-        pagibigLabelValue.setText(pagIbig);
-        sssLabelValue.setText(sss);
-        philhealthLabelValue.setText(philhealth);
-        
-        if(empAccount.getEmpDetails().getEmpBirthday() != null){
-             bdayLabelValue.setText(formatter.format(empAccount.getEmpDetails().getEmpBirthday()));
+
+        // ✅ Check if EmpDetails is null before accessing its properties
+        if (empAccount.getEmpDetails() != null) {
+            String tin = empAccount.getEmpDetails().getEmpTIN() != null ? empAccount.getEmpDetails().getEmpTIN() : "";
+            String phone = empAccount.getEmpDetails().getEmpPhoneNumber() != null ? empAccount.getEmpDetails().getEmpPhoneNumber() : "";
+            String pagIbig = empAccount.getEmpDetails().getEmpPagibig() != 0 ? String.valueOf(empAccount.getEmpDetails().getEmpPagibig()) : "";
+            String philhealth = empAccount.getEmpDetails().getEmpPhilHealth() != 0 ? String.valueOf(empAccount.getEmpDetails().getEmpPhilHealth()) : "";
+            String sss = empAccount.getEmpDetails().getEmpSSS() != null ? empAccount.getEmpDetails().getEmpSSS() : "";
+
+            usernameLabel.setText("@" + empAccount.getEmpUserName());
+            fullNameValue.setText(empAccount.getEmpDetails().getFormattedName());
+            empNumValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpID()));
+            addressLabelValue.setText(empAccount.getEmpDetails().getEmpAddress());
+            phoneLabelValue.setText(phone);
+            tinLabelValue.setText(tin);
+            pagibigLabelValue.setText(pagIbig);
+            sssLabelValue.setText(sss);
+            philhealthLabelValue.setText(philhealth);
+
+            if (empAccount.getEmpDetails().getEmpImmediateSupervisor() != null) {
+                supervisorLabelValue.setText(empAccount.getEmpDetails().getEmpImmediateSupervisor().getFormattedName());
+            }
+
+            if (empAccount.getEmpDetails().getEmpPosition() != null) {
+                positionLabelValue.setText(empAccount.getEmpDetails().getEmpPosition().getPosition());
+            }
+
+            if (empAccount.getEmpDetails().getEmpStatus() != null) {
+                statusLabelValue.setText(empAccount.getEmpDetails().getEmpStatus().getStatus());
+            }
+
+            if (empAccount.getEmpDetails().getEmpBirthday() != null) {
+                bdayLabelValue.setText(formatter.format(empAccount.getEmpDetails().getEmpBirthday()));
+                birthdayPayLabelValue.setText(formatter.format(empAccount.getEmpDetails().getEmpBirthday()));
+            }
         }
 
-        if(empAccount.getEmpDetails().getEmpImmediateSupervisor() != null){
-            supervisorLabelValue.setText(empAccount.getEmpDetails().getEmpImmediateSupervisor().getFormattedName());
+        // ✅ Check if PayrollDetails is null before accessing its properties
+        Finance payrollDetails = empAccount.getPayrollDetails();
+        if (payrollDetails != null) {
+            basicSalaryLabelValue.setText("PHP " + payrollDetails.getEmpBasicSalary());
+            riceLabelValue.setText("PHP " + payrollDetails.getEmpRice());
+            phoneAllowanceValue.setText("PHP " + payrollDetails.getEmpPhone());
+            clothingLabelValue.setText("PHP " + payrollDetails.getEmpClothing());
+            hourlyrateLabelValue.setText("PHP " + payrollDetails.getEmpHourlyRate());
+
+            // ✅ Payroll Labels
+            empIDPayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpID()));
+            namePayLabelValue.setText(empAccount.getEmpDetails().getFormattedName());
+            hourlyRatePayLabelValue.setText(String.valueOf(payrollDetails.getEmpHourlyRate()));
+            ricePayLabelValue.setText(String.valueOf(payrollDetails.getEmpRice()));
+            phonePayLabelValue.setText(String.valueOf(payrollDetails.getEmpPhone()));
+            clothingPayLabelValue.setText(String.valueOf(payrollDetails.getEmpClothing()));
+            totalAllowPayLabelValue.setText(String.valueOf(SalaryCalculation.getTotalAllowance(payrollDetails)));
+            basicSalaryPayLabelValue.setText(String.valueOf(payrollDetails.getEmpBasicSalary()));
+        } else {
+            System.err.println("Warning: Payroll details are null for " + empAccount.getEmpUserName());
         }
-        if(empAccount.getEmpDetails().getEmpPosition() != null){
-            positionLabelValue.setText(empAccount.getEmpDetails().getEmpPosition().getPosition());
-        }
-        if(empAccount.getEmpDetails().getEmpStatus() != null){
-            statusLabelValue.setText(empAccount.getEmpDetails().getEmpStatus().getStatus());
-        }
-        
-        updatePayrollEmpLabels(empAccount);
     }   
     
-    private void updatePayrollEmpLabels(EmployeeAccount empAccount){
+    private void updatePayrollEmpLabels(IT empAccount){
         DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
         if(empAccount.getEmpDetails().getEmpBirthday() != null){
@@ -181,15 +206,15 @@ public class FinanceDashboard extends javax.swing.JFrame {
         empIDPayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpID()));
         namePayLabelValue.setText(empAccount.getEmpDetails().getFormattedName());
         
-        hourlyRatePayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpHourlyRate()));
-        ricePayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpRice()));
-        phonePayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpPhone()));
-        clothingPayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpClothing()));
-        totalAllowPayLabelValue.setText(String.valueOf(SalaryCalculation.getTotalAllowance(empAccount.getEmpDetails())));
-        basicSalaryPayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpBasicSalary()));
+        hourlyRatePayLabelValue.setText(String.valueOf(empAccount.getPayrollDetails().getEmpHourlyRate()));
+        ricePayLabelValue.setText(String.valueOf(empAccount.getPayrollDetails().getEmpRice()));
+        phonePayLabelValue.setText(String.valueOf(empAccount.getPayrollDetails().getEmpPhone()));
+        clothingPayLabelValue.setText(String.valueOf(empAccount.getPayrollDetails().getEmpClothing()));
+        totalAllowPayLabelValue.setText(String.valueOf(SalaryCalculation.getTotalAllowance(empAccount.getPayrollDetails())));
+        basicSalaryPayLabelValue.setText(String.valueOf(empAccount.getPayrollDetails().getEmpBasicSalary()));
     }
     
-    private void updatePayrollLabels(List<Attendance> employeeHours){
+    private void updatePayrollLabels(List<Employee> employeeHours){
         
         if(employeeHours.isEmpty()){
             resetPayrollLabels();
@@ -2166,13 +2191,13 @@ public class FinanceDashboard extends javax.swing.JFrame {
      
     }//GEN-LAST:event_jButton1ActionPerformed
     private void refreshLeaveManagementTable(){  
-        List<LeaveDetails> leaveDetails =  leaveDetailsService.getAllLeaveRequestByStatus(LeaveDetails.LeaveStatus.PENDING);
+        List<HR> leaveDetails =  leaveDetailsService.getAllLeaveRequestByStatus(HR.LeaveStatus.PENDING);
             DefaultTableModel model = (DefaultTableModel) leaveManagementTable.getModel();
             model.setRowCount(0);
 
-            for(LeaveDetails leave : leaveDetails) {
+            for(HR leave : leaveDetails) {
                 Vector<Object> rowData = new Vector<>();
-                rowData.add(leave.getId());
+                rowData.add(leave.getLeaveId());
                 rowData.add(leave.getEmpID());
                 Person empDetails = hrService.getByEmpID(leave.getEmpID());
                 rowData.add(empDetails.getFormattedName());
@@ -2192,6 +2217,15 @@ public class FinanceDashboard extends javax.swing.JFrame {
     }
     
     private void loadEmployeeValues(int empID){
+        Finance payrollDetails = payrollService.getByEmpID(empID);
+        salaryTField.setText(String.valueOf(payrollDetails. getEmpBasicSalary()));
+        hourlyTField.setText(String.valueOf(payrollDetails.getEmpHourlyRate()));
+        biMonthlyTField.setText(String.valueOf(payrollDetails.getEmpMonthlyRate()));
+        riceTField.setText(String.valueOf(payrollDetails.getEmpRice()));
+        phoneAllowTField.setText(String.valueOf(payrollDetails.getEmpPhone()));
+        clothingTField.setText(String.valueOf(payrollDetails.getEmpClothing()));
+        
+        
         Person empDetails = hrService.getByEmpID(empID);
         employeeIDTField.setText(String.valueOf(empDetails.getEmpID()));
         lastNameTField.setText(empDetails.getLastName());
@@ -2203,12 +2237,7 @@ public class FinanceDashboard extends javax.swing.JFrame {
         addressTField.setText(empDetails.getEmpAddress());
         birthdayTField.setText(empDetails.getFormattedBirthday());
         phoneTField.setText(String.valueOf(empDetails.getEmpPhoneNumber()));
-        salaryTField.setText(String.valueOf(empDetails. getEmpBasicSalary()));
-        hourlyTField.setText(String.valueOf(empDetails.getEmpHourlyRate()));
-        biMonthlyTField.setText(String.valueOf(empDetails.getEmpMonthlyRate()));
-        riceTField.setText(String.valueOf(empDetails.getEmpRice()));
-        phoneAllowTField.setText(String.valueOf(empDetails.getEmpPhone()));
-        clothingTField.setText(String.valueOf(empDetails.getEmpClothing()));
+
         
         statusDropdown.setSelectedIndex(0);
         positionDropdown.setSelectedIndex(0);
@@ -2223,7 +2252,7 @@ public class FinanceDashboard extends javax.swing.JFrame {
             supervisorDropdown.setSelectedItem(new ComboItem(empDetails.getEmpImmediateSupervisor().getEmpID(),empDetails.getEmpImmediateSupervisor().getFormattedName()));
         }
         
-        EmployeeAccount empAccount = empAccountService.getByEmpID(empID);
+        IT empAccount = empAccountService.getByEmpID(empID);
         usernameTField.setText(empAccount.getEmpUserName());
         passwordTField.setText(empAccount.getEmpPassword());
     }
@@ -2289,8 +2318,9 @@ public class FinanceDashboard extends javax.swing.JFrame {
         long philhealth = !philhealthTField.getText().equals("") ? Long.valueOf(philhealthTField.getText().trim()): 0;
     
         
-        Person empDetails = new Person();
+        Person empDetails = new Employee();
         
+        Finance payrollDetails = new Finance();
         empDetails.setLastName(lastname);
         empDetails.setFirstName(firstname);
         try {
@@ -2309,16 +2339,17 @@ public class FinanceDashboard extends javax.swing.JFrame {
         }
         if(!employeeIDTField.getText().trim().equals("")){
             empDetails.setEmpID(Integer.parseInt(employeeIDTField.getText().trim()));
+            payrollDetails.setEmpID(Integer.parseInt(employeeIDTField.getText().trim()));
         }
         
         empDetails.setEmpAddress(address);
-        empDetails.setEmpBasicSalary(salary);
+        payrollDetails.setEmpBasicSalary(salary);
         empDetails.setEmpPhoneNumber(phoneNumber);
-        empDetails.setEmpHourlyRate(hourlyRate);
-        empDetails.setEmpMonthlyRate(biMonthly); 
-        empDetails.setEmpRice(rice);
-        empDetails.setEmpPhone(phoneAllow);
-        empDetails.setEmpClothing(clothing);
+        payrollDetails.setEmpHourlyRate(hourlyRate);
+        payrollDetails.setEmpMonthlyRate(biMonthly); 
+        payrollDetails.setEmpRice(rice);
+        payrollDetails.setEmpPhone(phoneAllow);
+        payrollDetails.setEmpClothing(clothing);
         empDetails.setEmpPagibig(pagibig);
         empDetails.setEmpSSS(sss);
         empDetails.setEmpTIN(tin);
@@ -2342,8 +2373,8 @@ public class FinanceDashboard extends javax.swing.JFrame {
         
         return empDetails;
     }
-    private EmployeeAccount updateEmpAccountValues(){
-        EmployeeAccount empAccount = new EmployeeAccount();
+    private IT updateEmpAccountValues(){
+        IT empAccount = new IT();
         empAccount.setEmpUserName(usernameTField.getText());
         empAccount.setEmpPassword(passwordTField.getText());
         return empAccount;
@@ -2427,11 +2458,11 @@ public class FinanceDashboard extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_clothingTFieldActionPerformed
 
-    private void populateAttendanceTable(List<Attendance> empHours){
+    private void populateAttendanceTable(List<Employee> empHours){
         DefaultTableModel model = (DefaultTableModel) attendanceTable.getModel();
         model.setRowCount(0);
 
-        for(Attendance employeeHours : empHours) {
+        for(Employee employeeHours : empHours) {
             Vector<Object> rowData = new Vector<>();
             rowData.add(employeeHours.getDate());
             rowData.add(employeeHours.getTimeIn());
@@ -2537,7 +2568,7 @@ public class FinanceDashboard extends javax.swing.JFrame {
             hrService.updateEmployeeDetails(empDetails);
 
             // Update employee account
-            EmployeeAccount empAccount = updateEmpAccountValues();
+            IT empAccount = updateEmpAccountValues();
             empAccount.setEmpID(empDetails.getEmpID()); // Linking account with details
             empAccount.setEmpDetails(empDetails);
             empAccountService.updateEmployeeAccount(empAccount);
@@ -2562,7 +2593,7 @@ public class FinanceDashboard extends javax.swing.JFrame {
         Person empDetails = updateEmpDetailValues();
         hrService.saveEmployeeDetails(empDetails);
 
-        EmployeeAccount empAccount = updateEmpAccountValues();
+        IT empAccount = updateEmpAccountValues();
         empAccountService.saveUserAccount(empAccount,empDetails);
         
         LeaveBalance  leaveBalance = new LeaveBalance();
@@ -2622,7 +2653,7 @@ public class FinanceDashboard extends javax.swing.JFrame {
         employeeSearchID = (empId == "" || empId == null) ? null : Integer.parseInt(empId);
         
         if(employeeSearchID !=null){
-            EmployeeAccount empAccount = empAccountService.getByEmpID(employeeSearchID);
+            IT empAccount = empAccountService.getByEmpID(employeeSearchID);
             if(empAccount != null){
                 updatePayrollEmpLabels(empAccount);
                 if(monthDropdown.getSelectedItem() != null && yearDropdown.getSelectedItem() != null ){
@@ -2630,7 +2661,7 @@ public class FinanceDashboard extends javax.swing.JFrame {
                     Integer year = ((ComboItem)yearDropdown.getSelectedItem()).getKey();
 
                     if(monthValue != null & year != null){
-                        List<Attendance> empHours = getEmployeeHours(monthValue,year,employeeSearchID);
+                        List<Employee> empHours = getEmployeeHours(monthValue,year,employeeSearchID);
                         populateAttendanceTable(empHours);
                         updatePayrollLabels(empHours);
                     }
@@ -2692,7 +2723,7 @@ public class FinanceDashboard extends javax.swing.JFrame {
 
 
             if(monthValue != null & year != null){
-                List<Attendance> empHours = getEmployeeHours(monthValue,year,empId);
+                List<Employee> empHours = getEmployeeHours(monthValue,year,empId);
                 populateAttendanceTable(empHours);
                 updatePayrollLabels(empHours);
             }
@@ -2706,7 +2737,7 @@ public class FinanceDashboard extends javax.swing.JFrame {
             Integer empId = employeeSearchID != null ? employeeSearchID : empAccount.getEmpID();
 
             if(monthValue != null & year != null){
-                List<Attendance> empHours = getEmployeeHours(monthValue,year,empId);
+                List<Employee> empHours = getEmployeeHours(monthValue,year,empId);
                 populateAttendanceTable(empHours);
                 updatePayrollLabels(empHours);
             }
@@ -2714,7 +2745,7 @@ public class FinanceDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_yearDropdownActionPerformed
     
     
-    private List<Attendance> getEmployeeHours(int month, int year, int empID){
+    private List<Employee> getEmployeeHours(int month, int year, int empID){
        Calendar dateFrom = Calendar.getInstance();
        dateFrom.set(Calendar.MONTH,month);
        dateFrom.set(Calendar.YEAR, year);

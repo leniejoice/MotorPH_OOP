@@ -12,14 +12,35 @@ import java.util.Date;
  *
  * @author leniejoice 
  */
-public class Attendance {
+public class Employee extends Person{
 
 
     private int empID;
     private Date date;
     private LocalTime timeIn;
     private LocalTime timeOut;
-    private int id;
+    private int attendanceId;
+    
+    
+    public Employee() {
+        super(0, "", "", "", null, "", "", "", 0, 0, null, null, null); 
+        // Initialize `Person` fields with default values
+    }
+    
+    public Employee(int empID, String lastName, String firstName, String empAddress, Date empBirthday,
+                    String empPhoneNumber, String empSSS, String empTIN, long empPhilHealth,
+                    long empPagibig, Person empImmediateSupervisor, EmployeeStatus empStatus,
+                    EmployeePosition empPosition, Date date, LocalTime timeIn, LocalTime timeOut, int attendanceId) {
+        // Call parent constructor (Person)
+        super(empID, lastName, firstName, empAddress, empBirthday, empPhoneNumber, empSSS, 
+              empTIN, empPhilHealth, empPagibig, empImmediateSupervisor, empStatus, empPosition);
+        
+        // Initialize Employee-specific fields
+        this.date = date;
+        this.timeIn = timeIn;
+        this.timeOut = timeOut;
+        this.attendanceId = attendanceId;
+    }
     
 
     public int getEmpID() {
@@ -55,12 +76,12 @@ public class Attendance {
     }
 
 
-    public int getId() {
-        return id;
+    public int getAttendanceId() {
+        return attendanceId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setAttendanceId(int attendanceId) {
+        this.attendanceId = attendanceId;
     }
     
     public String getFormattedHoursWorked(){
@@ -71,6 +92,7 @@ public class Attendance {
     public long getHoursWorked(){
         return (Duration.between(timeIn, timeOut).minus(timeIn.equals(LocalTime.MIDNIGHT) ? Duration.ZERO: Duration.ofHours(1))).toSeconds();
     }
+
     
 }
 

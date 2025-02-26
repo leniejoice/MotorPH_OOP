@@ -4,9 +4,9 @@
  */
 package com.payroll.domain;
 import com.payroll.util.*;
-import com.payroll.domain.EmployeeAccount;
+import com.payroll.domain.IT;
 import com.payroll.domain.Person;
-import com.payroll.domain.Attendance;
+import com.payroll.domain.Employee;
 import java.sql.Connection;
 import java.util.List;
 
@@ -64,42 +64,42 @@ public class SalaryCalculation {
         return tax;
     }
      
-    public static double getTotalAllowance(Person empDetails){
+    public static double getTotalAllowance(Finance payrollDetails){
         double total = 0;  
-        if (empDetails != null) {
-            total += empDetails.getEmpRice();    
-            total += empDetails.getEmpPhone();      
-            total += empDetails.getEmpClothing();   
+        if (payrollDetails != null) {
+            total += payrollDetails.getEmpRice();    
+            total += payrollDetails.getEmpPhone();      
+            total += payrollDetails.getEmpClothing();   
         }
         return total;  
      }
     
-    public static double getTotalHoursWorked(List<Attendance> empHours){
+    public static double getTotalHoursWorked(List<Employee> empHours){
         double totalHoursWorked = 0;
-        for (Attendance employeeHours: empHours){
+        for (Employee employeeHours: empHours){
             totalHoursWorked += employeeHours.getHoursWorked();
         }
         //return String.format("%d:%02d", totalHoursWorked / 3600, (totalHoursWorked % 3600) / 60);
         return totalHoursWorked/3600;
     }
     
-     public static String getFormattedTotalHoursWorked(List<Attendance> empHours){
+     public static String getFormattedTotalHoursWorked(List<Employee> empHours){
         long totalHoursWorked = 0;
-        for (Attendance employeeHours: empHours){
+        for (Employee employeeHours: empHours){
             totalHoursWorked += employeeHours.getHoursWorked();
         }
         return String.format("%d:%02d", totalHoursWorked / 3600, (totalHoursWorked % 3600) / 60);
     }
      
-    public static double getBasicSalary(List<Attendance> empHours,EmployeeAccount empAccount){
+    public static double getBasicSalary(List<Employee> empHours,IT empAccount){
         double totalHoursWorked = SalaryCalculation.getTotalHoursWorked(empHours);
-        double hourlyRate = empAccount.getEmpDetails().getEmpHourlyRate();
+        double hourlyRate = empAccount.getPayrollDetails().getEmpHourlyRate();
         return totalHoursWorked * hourlyRate;
     }
     
-    public static double getGrossSalary(List<Attendance> empHours,EmployeeAccount empAccount){
+    public static double getGrossSalary(List<Employee> empHours,IT empAccount){
         double basicSalary = getBasicSalary(empHours, empAccount);
-        return basicSalary + getTotalAllowance(empAccount.getEmpDetails());
+        return basicSalary + getTotalAllowance(empAccount.getPayrollDetails());
                 
     }
     

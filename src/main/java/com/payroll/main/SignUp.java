@@ -4,11 +4,12 @@
  */
 package com.payroll.main;
 
-import com.payroll.domain.EmployeeAccount;
+import com.payroll.domain.Employee;
+import com.payroll.domain.IT;
 import com.payroll.domain.Person;
 import com.payroll.domain.LeaveBalance;
 import com.payroll.domain.Person;
-import com.payroll.services.ITAccountService;
+import com.payroll.services.ITService;
 import com.payroll.services.HRService;
 import com.payroll.services.EmployeeService;
 import com.payroll.util.DatabaseConnection;
@@ -30,7 +31,7 @@ public class SignUp extends javax.swing.JFrame {
      * Creates new form LogIn
      */
   
-    private ITAccountService empAccountService;
+    private ITService empAccountService;
     private HRService hrService;
     private EmployeeService leaveDetailsService;
     
@@ -38,7 +39,7 @@ public class SignUp extends javax.swing.JFrame {
        initComponents();
        DatabaseConnection dbConnection = new DatabaseConnection();
        dbConnection.connect();
-       this.empAccountService = new ITAccountService(dbConnection);
+       this.empAccountService = new ITService(dbConnection);
        this.hrService = new HRService(dbConnection);
        this.leaveDetailsService = new EmployeeService(dbConnection);
     }
@@ -272,12 +273,18 @@ public class SignUp extends javax.swing.JFrame {
         }
 
         System.out.println("Attempting to create user account...");
-        Person person = new Person () {};
+        Employee person = new Employee();
         person.setFirstName(firstName);
         person.setLastName(lastName);
         hrService.saveEmployeeDetails(person);
+        
+        int empID = person.getEmpID();
+        if(empID==0){
+            JOptionPane.showMessageDialog(null, "Error: Employee ID not generated.");
+            return;
+        }
 
-        EmployeeAccount empAccount = new EmployeeAccount();
+        IT empAccount = new IT();
         empAccount.setEmpUserName(username);
         empAccount.setEmpPassword(password);
         empAccountService.saveUserAccount(empAccount,person);

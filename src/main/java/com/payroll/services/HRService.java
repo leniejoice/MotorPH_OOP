@@ -4,7 +4,7 @@
  */
 package com.payroll.services;
 import com.payroll.domain.Person;
-import com.payroll.domain.Attendance;
+import com.payroll.domain.Employee;
 import com.payroll.domain.EmployeePosition;
 import com.payroll.domain.EmployeeStatus;
 import com.payroll.util.DatabaseConnection;
@@ -134,13 +134,7 @@ public class HRService {
                     + "    pag_ibig = ?,\n"
                     + "    status = ?,\n"
                     + "    position = ?,\n"
-                    + "    immediate_supervisor = ?,\n"
-                    + "    basic_salary = ?,\n"
-                    + "    rice_subsidy = ?,\n"
-                    + "    phone_allowance = ?,\n"
-                    + "    clothing_allowance = ?,\n"
-                    + "    gross_semi_monthly_rate = ?,\n"
-                    + "    hourly_rate = ?\n"
+                    + "    immediate_supervisor = ? \n "
                     + "WHERE employee_id = ?";
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(Query);
@@ -156,13 +150,7 @@ public class HRService {
                 preparedStatement.setInt(10, statusId);
                 preparedStatement.setInt(11, positionId);
                 preparedStatement.setInt(12, superVisorId);
-                preparedStatement.setDouble(13,empDetails.getEmpBasicSalary());
-                preparedStatement.setDouble(14,empDetails.getEmpRice());
-                preparedStatement.setDouble(15,empDetails.getEmpPhone());
-                preparedStatement.setDouble(16,empDetails.getEmpClothing());
-                preparedStatement.setDouble(17,empDetails.getEmpMonthlyRate());
-                preparedStatement.setDouble(18,empDetails.getEmpHourlyRate());
-                preparedStatement.setInt(19, empDetails.getEmpID());
+                preparedStatement.setInt(13, empDetails.getEmpID());
                 
                 preparedStatement.executeUpdate();
                 preparedStatement.close();
@@ -181,8 +169,8 @@ public class HRService {
          
          
             if (connection != null) {
-            String Query = "INSERT into public.employee (lastname, firstname,birthday,address,phone_number,sss,philhealth,tin,pag_ibig,status,position,immediate_supervisor,basic_salary,rice_subsidy,phone_allowance,clothing_allowance,gross_semi_monthly_rate,hourly_rate)"
-                    + "values(?, ?, ?, ?,?, ?, ?, ?,?, ?, ?, ?,?, ?, ?, ?,?,?)";
+            String Query = "INSERT into public.employee (lastname, firstname,birthday,address,phone_number,sss,philhealth,tin,pag_ibig,status,position,immediate_supervisor)"
+                    + "values(?, ?, ?, ?,?, ?, ?, ?,?, ?, ?, ?)";
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(Query,Statement.RETURN_GENERATED_KEYS);
                 preparedStatement.setString(1,empDetails.getLastName());
@@ -197,12 +185,7 @@ public class HRService {
                 preparedStatement.setObject(10, statusId, Types.INTEGER);
                 preparedStatement.setObject(11, positionId,Types.INTEGER);
                 preparedStatement.setObject(12, superVisorId,Types.INTEGER);
-                preparedStatement.setDouble(13,empDetails.getEmpBasicSalary());
-                preparedStatement.setDouble(14,empDetails.getEmpRice());
-                preparedStatement.setDouble(15,empDetails.getEmpPhone());
-                preparedStatement.setDouble(16,empDetails.getEmpClothing());
-                preparedStatement.setDouble(17,empDetails.getEmpMonthlyRate());
-                preparedStatement.setDouble(18,empDetails.getEmpHourlyRate());
+  
                 
          
                 int affectedrows = preparedStatement.executeUpdate();
@@ -395,8 +378,8 @@ public class HRService {
         return employeeDetails;
     } 
 
-    public List<Attendance> getEmpHoursByEmpID(int empID){
-        List<Attendance> empHours = new ArrayList<>();
+    /*public List<Employee> getEmpHoursByEmpID(int empID){
+        List<Employee> empHours = new ArrayList<>();
         if (connection != null) {
             String Query = "SELECT * FROM employee_hours where employee_id = ?";
             try {
@@ -405,10 +388,10 @@ public class HRService {
                 ResultSet resultSet = preparedStatement.executeQuery();
 
                 while (resultSet.next()) {
-                    Attendance e = new Attendance();
+                    Employee e = new Employee();
                     e.setEmpID(resultSet.getInt("employee_id"));
                     e.setDate(resultSet.getDate("date"));
-                    e.setId(resultSet.getInt("id"));
+                    e.setLeaveId(resultSet.getInt("id"));
                     e.setTimeIn(resultSet.getObject("time_in", LocalTime.class));
                     e.setTimeOut(resultSet.getObject("time_out", LocalTime.class));
                     empHours.add(e);
@@ -421,11 +404,42 @@ public class HRService {
             }          
         }                          
         return empHours;
-    } 
+    } */
+    public List<Employee> getEmpHoursByEmpID(int empID) {
+        List<Employee> empHours = new ArrayList<>();
+
+        if (connection == null) {
+            System.err.println("Database connection is null. Cannot fetch employee hours.");
+            return empHours;
+        }
+
+        String query = "SELECT * FROM employee_hours WHERE employee_id = ?";
+
+        // ✅ Use try-with-resources to prevent resource leaks
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, empID);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    Employee e = new Employee(); // ✅ Now works due to default constructor
+                    e.setEmpID(resultSet.getInt("employee_id"));
+                    e.setDate(resultSet.getDate("date"));
+                    e.setAttendanceId(resultSet.getInt("id"));
+                    e.setTimeIn(resultSet.getObject("time_in", LocalTime.class));
+                    e.setTimeOut(resultSet.getObject("time_out", LocalTime.class));
+                    empHours.add(e);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return empHours;
+    }
     
     private Person toEmployeeDetails(ResultSet resultSet, boolean fetchSupervisor) 
         throws SQLException {
-        Person employeeDetails = new Person();
+        Person employeeDetails = new Employee();
             employeeDetails.setEmpID(resultSet.getInt("employee_id"));
             employeeDetails.setFirstName(resultSet.getString("firstname"));
             employeeDetails.setLastName(resultSet.getString("lastname"));
@@ -436,12 +450,6 @@ public class HRService {
             employeeDetails.setEmpPhilHealth(resultSet.getLong("philhealth"));
             employeeDetails.setEmpTIN(resultSet.getString("tin"));
             employeeDetails.setEmpPagibig(resultSet.getLong("pag_ibig"));
-            employeeDetails.setEmpBasicSalary(resultSet.getDouble("basic_salary"));
-            employeeDetails.setEmpRice(resultSet.getDouble("rice_subsidy"));
-            employeeDetails.setEmpPhone(resultSet.getDouble("phone_allowance"));
-            employeeDetails.setEmpClothing(resultSet.getDouble("clothing_allowance"));
-            employeeDetails.setEmpMonthlyRate(resultSet.getDouble("gross_semi_monthly_rate"));
-            employeeDetails.setEmpHourlyRate(resultSet.getDouble("hourly_rate"));
             int superVisorId  = resultSet.getInt("immediate_supervisor");
             if (superVisorId > 0 && fetchSupervisor){
                 Person superVisor = getByEmpID(superVisorId, false);
