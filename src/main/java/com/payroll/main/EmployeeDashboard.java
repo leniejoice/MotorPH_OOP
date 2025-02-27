@@ -4,16 +4,16 @@
  */
 package com.payroll.main;
 
-import com.payroll.domain.ComboItem;
+import com.payroll.subdomain.ComboItem;
 import com.payroll.domain.IT;
 import com.payroll.domain.Employee;
-import com.payroll.domain.EmployeePosition;
-import com.payroll.domain.EmployeeStatus;
+import com.payroll.subdomain.EmployeePosition;
+import com.payroll.subdomain.EmployeeStatus;
 import com.payroll.domain.Finance;
 import com.payroll.domain.LeaveBalance;
 import com.payroll.domain.HR;
 import com.payroll.domain.HR.LeaveStatus;
-import com.payroll.domain.LeaveType;
+import com.payroll.subdomain.LeaveType;
 import com.payroll.domain.Person;
 import com.payroll.services.ITService;
 import com.payroll.services.EmployeeService;
@@ -94,11 +94,11 @@ public class EmployeeDashboard extends javax.swing.JFrame {
         empIDLabelValue.setText(String.valueOf(empAccount.getEmpID()));
         addressLabelValue.setText(empAccount.getEmpAddress());
         phoneLabelValue.setText(phone);
-        basicSalaryLabelValue.setText("PHP " + String.valueOf(empAccount.getPayrollDetails().getEmpBasicSalary()));
-        riceLabelValue.setText("PHP " + String.valueOf(empAccount.getPayrollDetails().getEmpRice()));
-        phoneAllowanceValue.setText("PHP " + String.valueOf(empAccount.getPayrollDetails().getEmpPhone()));
-        clothingLabelValue.setText("PHP " + String.valueOf(empAccount.getPayrollDetails().getEmpClothing()));
-        hourlyrateLabelValue.setText("PHP " + String.valueOf(empAccount.getPayrollDetails().getEmpHourlyRate()));
+        basicSalaryLabelValue.setText("PHP " + String.valueOf(empAccount.getEmpDetails().getEmpBasicSalary()));
+        riceLabelValue.setText("PHP " + String.valueOf(empAccount.getEmpDetails().getEmpRice()));
+        phoneAllowanceValue.setText("PHP " + String.valueOf(empAccount.getEmpDetails().getEmpPhone()));
+        clothingLabelValue.setText("PHP " + String.valueOf(empAccount.getEmpDetails().getEmpClothing()));
+        hourlyrateLabelValue.setText("PHP " + String.valueOf(empAccount.getEmpDetails().getEmpHourlyRate()));
         tinLabelValue.setText(tin);
         pagibigLabelValue.setText(pagIbig);
         sssLabelValue.setText(sss);
@@ -131,12 +131,12 @@ public class EmployeeDashboard extends javax.swing.JFrame {
         namePayLabelValue.setText(empAccount.getEmpDetails().getFormattedName());
         //addressPayLabelValue.setText(empAccount.getEmpAddress());
         
-        hourlyRatePayLabelValue.setText(String.valueOf(empAccount.getPayrollDetails().getEmpHourlyRate()));
-        ricePayLabelValue.setText(String.valueOf(empAccount.getPayrollDetails().getEmpRice()));
-        phonePayLabelValue.setText(String.valueOf(empAccount.getPayrollDetails().getEmpPhone()));
-        clothingPayLabelValue.setText(String.valueOf(empAccount.getPayrollDetails().getEmpClothing()));
-        totalAllowPayLabelValue.setText(String.valueOf(SalaryCalculation.getTotalAllowance(empAccount.getPayrollDetails())));
-        basicSalaryPayLabelValue.setText(String.valueOf(empAccount.getPayrollDetails().getEmpBasicSalary()));
+        hourlyRatePayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpHourlyRate()));
+        ricePayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpRice()));
+        phonePayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpPhone()));
+        clothingPayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpClothing()));
+        totalAllowPayLabelValue.setText(String.valueOf(SalaryCalculation.getTotalAllowance(empAccount.getEmpDetails())));
+        basicSalaryPayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpBasicSalary()));
         
     }
     private void updatePayrollLabels(List<Employee> employeeHours){

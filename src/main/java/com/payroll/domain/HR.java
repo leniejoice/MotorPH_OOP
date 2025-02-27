@@ -3,6 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.payroll.domain;
+import com.payroll.subdomain.EmployeePosition;
+import com.payroll.subdomain.EmployeeStatus;
+import com.payroll.subdomain.LeaveType;
 
 import java.time.LocalTime;
 import java.util.Date;
@@ -30,18 +33,20 @@ public class HR extends Person {
     
     
     public HR() {
-        super(0, "", "", "", null, "", "", "", 0, 0, null, null, null); 
+        super(0, "", "", "", null, "", "", "", 0, 0, null, null, null,0,0,0,0,0,0); 
         // Initialize `Person` fields with default values
     }
     
      public HR(int empID, String lastName, String firstName, String empAddress, Date empBirthday,
               String empPhoneNumber, String empSSS, String empTIN, long empPhilHealth,
               long empPagibig, Person empImmediateSupervisor, EmployeeStatus empStatus,
-              EmployeePosition empPosition, int leaveId, String subject, LeaveType leaveType,
+              EmployeePosition empPosition,double empBasicSalary, double empRice,
+                   double empPhone, double empClothing, double empMonthlyRate, double empHourlyRate, int leaveId, String subject, LeaveType leaveType,
               Date dateFrom, Date dateTo, int totalDays, String reason, LeaveStatus status) {
         // Call Parent Constructor (Person)
         super(empID, lastName, firstName, empAddress, empBirthday, empPhoneNumber, empSSS, 
-              empTIN, empPhilHealth, empPagibig, empImmediateSupervisor, empStatus, empPosition);
+              empTIN, empPhilHealth, empPagibig, empImmediateSupervisor, empStatus, empPosition,
+              empBasicSalary,empRice,empPhone,empClothing, empMonthlyRate,empHourlyRate);
         
         // Initialize HR-specific fields
         this.leaveId = leaveId;

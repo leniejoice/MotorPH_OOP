@@ -4,8 +4,8 @@
  */
 package com.payroll.services;
 import com.payroll.domain.Employee;
-import com.payroll.domain.EmployeePosition;
-import com.payroll.domain.EmployeeStatus;
+import com.payroll.subdomain.EmployeePosition;
+import com.payroll.subdomain.EmployeeStatus;
 import com.payroll.domain.Finance;
 import com.payroll.domain.Person;
 import com.payroll.util.DatabaseConnection;
@@ -36,31 +36,7 @@ public class FinanceService {
     public FinanceService(DatabaseConnection dbConnection){
         this.connection = dbConnection.connect();    
     }
-    
-    
-    public Finance getByEmpID(int empID){
-        Finance payrollDetails = null ;
-        if (connection != null) {
-            String Query = "SELECT * FROM employee where employee_id = ?";
-            ResultSet resultSet = null;
-            PreparedStatement preparedStatement =null;
-            try {
-                preparedStatement = connection.prepareStatement(Query);
-                preparedStatement.setInt(1,empID);
-                resultSet = preparedStatement.executeQuery();
-                if(resultSet.next()){
-                    payrollDetails = toPayrollDetails(resultSet);
-                    
-                }
-                resultSet.close();
-                preparedStatement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }   
-        }                          
-        return payrollDetails;
-    } 
-    
+   
     
     public List<Employee> getEmployeeHours(int empID, Date from, Date to){
         List<Employee> empHours = new ArrayList<>();
@@ -118,85 +94,5 @@ public class FinanceService {
         }
         return contribution;
     }
-    
-     public Finance updatePayrollDetails(Finance payrollDetails){
-         
-         
-            if (connection != null) {
-            String Query = "UPDATE public.employee \n"
-                    + "SET \n"
-                    + "    basic_salary = ?,\n"
-                    + "    rice_subsidy = ?,\n"
-                    + "    phone_allowance = ?,\n"
-                    + "    clothing_allowance = ?,\n"
-                    + "    gross_semi_monthly_rate = ?,\n"
-                    + "    hourly_rate = ?\n"
-                    + "WHERE employee_id = ?";
-            try {
-                PreparedStatement preparedStatement = connection.prepareStatement(Query);
-                preparedStatement.setDouble(1,payrollDetails.getEmpBasicSalary());
-                preparedStatement.setDouble(2,payrollDetails.getEmpRice());
-                preparedStatement.setDouble(3,payrollDetails.getEmpPhone());
-                preparedStatement.setDouble(4,payrollDetails.getEmpClothing());
-                preparedStatement.setDouble(5,payrollDetails.getEmpMonthlyRate());
-                preparedStatement.setDouble(6,payrollDetails.getEmpHourlyRate());
-                preparedStatement.setInt(7, payrollDetails.getEmpID());
-                
-                preparedStatement.executeUpdate();
-                preparedStatement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }         
-        }                          
-        return payrollDetails;
-    }
      
-    public Finance savePayrollDetails(Finance payrollDetails){
-
-            if (connection != null) {
-            String query = "INSERT INTO public.payroll (basic_salary, rice_subsidy, phone_allowance, clothing_allowance, gross_semi_monthly_rate, hourly_rate) " +
-                   "VALUES (?, ?, ?, ?, ?, ?)";
-
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-                preparedStatement.setDouble(1, payrollDetails.getEmpBasicSalary());
-                preparedStatement.setDouble(2, payrollDetails.getEmpRice());
-                preparedStatement.setDouble(3, payrollDetails.getEmpPhone());
-                preparedStatement.setDouble(4, payrollDetails.getEmpClothing());
-                preparedStatement.setDouble(5, payrollDetails.getEmpMonthlyRate());
-                preparedStatement.setDouble(6, payrollDetails.getEmpHourlyRate());
-
-                int affectedRows = preparedStatement.executeUpdate();
-                if (affectedRows > 0) {
-                    try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
-                        if (generatedKeys.next()) {
-                            payrollDetails.setEmpID(generatedKeys.getInt(1));
-                        } else {
-                            throw new SQLException("Inserting payroll details failed, no ID obtained.");
-                        }
-                    }
-                } else {
-                    throw new SQLException("Inserting payroll details failed, no rows affected.");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return null; // Return null if an error occurs
-            }
-        }
-            return payrollDetails;
-    }
-     
-    private Finance toPayrollDetails(ResultSet resultSet) 
-        throws SQLException {
-        Finance payrollDetails = new Finance();
-
-        payrollDetails.setEmpBasicSalary(resultSet.getDouble("basic_salary"));
-        payrollDetails.setEmpRice(resultSet.getDouble("rice_subsidy"));
-        payrollDetails.setEmpPhone(resultSet.getDouble("phone_allowance"));
-        payrollDetails.setEmpClothing(resultSet.getDouble("clothing_allowance"));
-        payrollDetails.setEmpMonthlyRate(resultSet.getDouble("gross_semi_monthly_rate"));
-        payrollDetails.setEmpHourlyRate(resultSet.getDouble("hourly_rate"));
-
-        return payrollDetails;
-    }  
-    
 }

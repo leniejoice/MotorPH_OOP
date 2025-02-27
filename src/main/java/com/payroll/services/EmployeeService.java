@@ -7,7 +7,7 @@ package com.payroll.services;
 import com.payroll.domain.LeaveBalance;
 import com.payroll.domain.HR;
 import com.payroll.domain.HR.LeaveStatus;
-import com.payroll.domain.LeaveType;
+import com.payroll.subdomain.LeaveType;
 import com.payroll.util.DatabaseConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,7 +24,6 @@ import java.util.List;
  */
 public class EmployeeService {
     private Connection connection;
-    private DatabaseConnection dbConnection;
     
     
     public EmployeeService(DatabaseConnection dbConnection){

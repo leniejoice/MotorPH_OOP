@@ -4,16 +4,16 @@
  */
 package com.payroll.main;
 
-import com.payroll.domain.ComboItem;
+import com.payroll.subdomain.ComboItem;
 import com.payroll.domain.IT;
 import com.payroll.domain.Person;
 import com.payroll.domain.Employee;
-import com.payroll.domain.EmployeePosition;
-import com.payroll.domain.EmployeeStatus;
+import com.payroll.subdomain.EmployeePosition;
+import com.payroll.subdomain.EmployeeStatus;
 import com.payroll.domain.Finance;
 import com.payroll.domain.LeaveBalance;
 import com.payroll.domain.HR;
-import com.payroll.domain.UserRole;
+import com.payroll.subdomain.UserRole;
 import com.payroll.services.HRService;
 import com.payroll.services.ITService;
 import com.payroll.services.EmployeeService;
@@ -83,68 +83,67 @@ public class ITDashboard extends javax.swing.JFrame {
         this.empAccount = empAccount;
     }
     
-
-    
     private void updateUserLabels(IT empAccount) {
         if (empAccount == null) {
-        System.err.println("Error: empAccount is null");
-        return;
-    }
+            System.err.println("Error: empAccount is null");
+            return;
+        }
 
         DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
         // ✅ Check if EmpDetails is null before accessing its properties
         if (empAccount.getEmpDetails() != null) {
-            String tin = empAccount.getEmpDetails().getEmpTIN() != null ? empAccount.getEmpDetails().getEmpTIN() : "";
-            String phone = empAccount.getEmpDetails().getEmpPhoneNumber() != null ? empAccount.getEmpDetails().getEmpPhoneNumber() : "";
-            String pagIbig = empAccount.getEmpDetails().getEmpPagibig() != 0 ? String.valueOf(empAccount.getEmpDetails().getEmpPagibig()) : "";
-            String philhealth = empAccount.getEmpDetails().getEmpPhilHealth() != 0 ? String.valueOf(empAccount.getEmpDetails().getEmpPhilHealth()) : "";
-            String sss = empAccount.getEmpDetails().getEmpSSS() != null ? empAccount.getEmpDetails().getEmpSSS() : "";
+            Person empDetails = empAccount.getEmpDetails();
+
+            String tin = empDetails.getEmpTIN() != null ? empDetails.getEmpTIN() : "";
+            String phone = empDetails.getEmpPhoneNumber() != null ? empDetails.getEmpPhoneNumber() : "";
+            String pagIbig = empDetails.getEmpPagibig() != 0 ? String.valueOf(empDetails.getEmpPagibig()) : "";
+            String philhealth = empDetails.getEmpPhilHealth() != 0 ? String.valueOf(empDetails.getEmpPhilHealth()) : "";
+            String sss = empDetails.getEmpSSS() != null ? empDetails.getEmpSSS() : "";
 
             usernameLabel.setText("@" + empAccount.getEmpUserName());
-            fullNameValue.setText(empAccount.getEmpDetails().getFormattedName());
-            fullNameValue2.setText(empAccount.getEmpDetails().getFormattedName());
-            empNumValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpID()));
-            addressLabelValue.setText(empAccount.getEmpDetails().getEmpAddress());
+            fullNameValue.setText(empDetails.getFormattedName());
+            fullNameValue2.setText(empDetails.getFormattedName());
+            empNumValue.setText(String.valueOf(empDetails.getEmpID()));
+            addressLabelValue.setText(empDetails.getEmpAddress() != null ? empDetails.getEmpAddress() : "");
             phoneLabelValue.setText(phone);
             tinLabelValue.setText(tin);
             pagibigLabelValue.setText(pagIbig);
             sssLabelValue.setText(sss);
             philhealthLabelValue.setText(philhealth);
 
-            if (empAccount.getEmpDetails().getEmpImmediateSupervisor() != null) {
-                supervisorLabelValue.setText(empAccount.getEmpDetails().getEmpImmediateSupervisor().getFormattedName());
+            // ✅ Fixed incorrect method calls and ensured salary values are properly formatted
+            basicSalaryLabelValue.setText("PHP " + String.format("%.2f", empDetails.getEmpBasicSalary()));
+            riceLabelValue.setText("PHP " + String.format("%.2f", empDetails.getEmpRice()));
+            phoneAllowanceValue.setText("PHP " + String.format("%.2f", empDetails.getEmpPhone()));
+            clothingLabelValue.setText("PHP " + String.format("%.2f", empDetails.getEmpClothing()));
+            hourlyrateLabelValue.setText("PHP " + String.format("%.2f", empDetails.getEmpHourlyRate()));
+
+           
+
+            // ✅ Check for supervisor existence before accessing
+            if (empDetails.getEmpImmediateSupervisor() != null) {
+                supervisorLabelValue.setText(empDetails.getEmpImmediateSupervisor().getFormattedName());
+            } else {
+                supervisorLabelValue.setText("N/A");
             }
 
-            if (empAccount.getEmpDetails().getEmpPosition() != null) {
-                positionLabelValue.setText(empAccount.getEmpDetails().getEmpPosition().getPosition());
+            // ✅ Check for job position existence before accessing
+            if (empDetails.getEmpPosition() != null) {
+                positionLabelValue.setText(empDetails.getEmpPosition().getPosition());
+            } else {
+                positionLabelValue.setText("N/A");
             }
 
-            if (empAccount.getEmpDetails().getEmpStatus() != null) {
-                statusLabelValue.setText(empAccount.getEmpDetails().getEmpStatus().getStatus());
+            // ✅ Check for employment status existence before accessing
+            if (empDetails.getEmpStatus() != null) {
+                statusLabelValue.setText(empDetails.getEmpStatus().getStatus());
+            } else {
+                statusLabelValue.setText("N/A");
             }
-
-            if (empAccount.getEmpDetails().getEmpBirthday() != null) {
-                bdayLabelValue.setText(formatter.format(empAccount.getEmpDetails().getEmpBirthday()));
-            }
-        }
-
-        // ✅ Check if PayrollDetails is null before accessing its properties
-        Finance payrollDetails = empAccount.getPayrollDetails();
-        if (payrollDetails != null) {
-            basicSalaryLabelValue.setText("PHP " + payrollDetails.getEmpBasicSalary());
-            riceLabelValue.setText("PHP " + payrollDetails.getEmpRice());
-            phoneAllowanceValue.setText("PHP " + payrollDetails.getEmpPhone());
-            clothingLabelValue.setText("PHP " + payrollDetails.getEmpClothing());
-            hourlyrateLabelValue.setText("PHP " + payrollDetails.getEmpHourlyRate());
-
  
-        } else {
-            System.err.println("Warning: Payroll details are null for " + empAccount.getEmpUserName());
         }
-        
-    }   
-    
+    }
     
     private void loadAllRoles(){
         List<UserRole> userRoles = itService.getAllUserRole();
@@ -340,7 +339,7 @@ public class ITDashboard extends javax.swing.JFrame {
 
         roleManagementButton.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         roleManagementButton.setForeground(new java.awt.Color(255, 255, 255));
-        roleManagementButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/employees.png"))); // NOI18N
+        roleManagementButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/settings-4-16.png"))); // NOI18N
         roleManagementButton.setText(" Role Management");
         roleManagementButton.setContentAreaFilled(false);
         roleManagementButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);

@@ -14,7 +14,7 @@ import java.util.List;
  *
  * @author leniejoice
  */
-public class SalaryCalculation {
+public abstract class SalaryCalculation {
     private Connection connection;
     public SalaryCalculation(DatabaseConnection dbConnection){
         this.connection = dbConnection.getConnection();  
@@ -64,12 +64,12 @@ public class SalaryCalculation {
         return tax;
     }
      
-    public static double getTotalAllowance(Finance payrollDetails){
+    public static double getTotalAllowance(Person empDetails){
         double total = 0;  
-        if (payrollDetails != null) {
-            total += payrollDetails.getEmpRice();    
-            total += payrollDetails.getEmpPhone();      
-            total += payrollDetails.getEmpClothing();   
+        if (empDetails != null) {
+            total += empDetails.getEmpRice();    
+            total += empDetails.getEmpPhone();      
+            total += empDetails.getEmpClothing();   
         }
         return total;  
      }
@@ -93,13 +93,13 @@ public class SalaryCalculation {
      
     public static double getBasicSalary(List<Employee> empHours,IT empAccount){
         double totalHoursWorked = SalaryCalculation.getTotalHoursWorked(empHours);
-        double hourlyRate = empAccount.getPayrollDetails().getEmpHourlyRate();
+        double hourlyRate = empAccount.getEmpDetails().getEmpHourlyRate();
         return totalHoursWorked * hourlyRate;
     }
     
     public static double getGrossSalary(List<Employee> empHours,IT empAccount){
         double basicSalary = getBasicSalary(empHours, empAccount);
-        return basicSalary + getTotalAllowance(empAccount.getPayrollDetails());
+        return basicSalary + getTotalAllowance(empAccount.getEmpDetails());
                 
     }
     

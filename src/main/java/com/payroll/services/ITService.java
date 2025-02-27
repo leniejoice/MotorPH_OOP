@@ -4,9 +4,11 @@
  */
 package com.payroll.services;
 
+import com.payroll.domain.Finance;
 import com.payroll.domain.IT;
 import com.payroll.domain.Person;
-import com.payroll.domain.UserRole;
+import com.payroll.subdomain.UserRole;
+import com.payroll.subdomain.EmployeePosition;
 import com.payroll.util.DatabaseConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,6 +27,7 @@ public class ITService {
     private Connection connection;
     private DatabaseConnection dbConnection;
     private HRService hrService;
+    private FinanceService financeService;
     private EmployeeService leaveDetailsService;
     
     
@@ -94,7 +97,9 @@ public class ITService {
                     employeeAccount.setUserRole(role);
 
                     Person employeeDetails = hrService.getByEmpID(empID);
+                    //Finance payrollDetails = financeService.getByEmpID(empID);
                     employeeAccount.setEmpDetails(employeeDetails);
+                    //employeeAccount.setPayrollDetails(payrollDetails);
                 }
                 
                 resultSet.close();

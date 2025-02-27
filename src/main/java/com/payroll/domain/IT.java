@@ -3,6 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.payroll.domain;
+import com.payroll.subdomain.EmployeeStatus;
+import com.payroll.subdomain.EmployeePosition;
+import com.payroll.subdomain.EmployeeStatus;
+
+import com.payroll.subdomain.UserRole;
 
 import java.util.Date;
 
@@ -15,13 +20,12 @@ public class IT extends Person{
     private String empUserName; 
     private String empPassword;
     private Person empDetails;
-    private Finance payrollDetails;
     private UserRole userRole;
     private HR leaveDetail;
 
     // ✅ No-Args Constructor (Fixes NullPointerException for payrollDetails)
     public IT() {
-        super(0, "", "", "", null, "", "", "", 0, 0, null, null, null);
+        super(0, "", "", "", null, "", "", "", 0, 0, null, null, null,0,0,0,0,0,0);
         //this.payrollDetails = new Finance();
  
     }
@@ -30,16 +34,18 @@ public class IT extends Person{
     public IT(int empID, String lastName, String firstName, String empAddress, Date empBirthday,
               String empPhoneNumber, String empSSS, String empTIN, long empPhilHealth,
               long empPagibig, Person empImmediateSupervisor, EmployeeStatus empStatus,
-              EmployeePosition empPosition, int accountID, String empUserName, String empPassword,
+              EmployeePosition empPosition, double empBasicSalary, double empRice,
+              double empPhone, double empClothing, double empMonthlyRate, double empHourlyRate,
+              int accountID, String empUserName, String empPassword,
               Person empDetails, Finance payrollDetails, UserRole userRole, HR leaveDetail) {
         super(empID, lastName, firstName, empAddress, empBirthday, empPhoneNumber, empSSS, 
-              empTIN, empPhilHealth, empPagibig, empImmediateSupervisor, empStatus, empPosition);
+              empTIN, empPhilHealth, empPagibig, empImmediateSupervisor, empStatus, empPosition,
+              empBasicSalary,empRice,empPhone,empClothing, empMonthlyRate,empHourlyRate);
 
         this.accountID = accountID;
         this.empUserName = empUserName;
         this.empPassword = empPassword;
         this.empDetails = empDetails;
-        this.payrollDetails = payrollDetails; 
         this.userRole = userRole;
         this.leaveDetail = leaveDetail; // ✅ Prevent null issues
     }
@@ -70,17 +76,6 @@ public class IT extends Person{
     
     public void setEmpDetails(Person empDetails) { 
         this.empDetails = empDetails; }
-    
-    public Finance getPayrollDetails() {
-    if (payrollDetails == null) {
-        payrollDetails = new Finance(); // Prevent NullPointerException
-    }
-    return payrollDetails;
-    }
-    
-    public void setPayrollDetails(Finance payrollDetails) {
-        this.payrollDetails = (payrollDetails != null) ? payrollDetails : new Finance();
-    }
 
     public UserRole getUserRole() { 
         return userRole; }

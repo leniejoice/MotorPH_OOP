@@ -4,12 +4,12 @@
  */
 package com.payroll.main;
 
-import com.payroll.domain.ComboItem;
+import com.payroll.subdomain.ComboItem;
 import com.payroll.domain.IT;
 import com.payroll.domain.Person;
 import com.payroll.domain.Employee;
-import com.payroll.domain.EmployeePosition;
-import com.payroll.domain.EmployeeStatus;
+import com.payroll.subdomain.EmployeePosition;
+import com.payroll.subdomain.EmployeeStatus;
 import com.payroll.domain.Finance;
 import com.payroll.domain.LeaveBalance;
 import com.payroll.domain.HR;
@@ -119,84 +119,84 @@ public class HRDashboard extends javax.swing.JFrame {
     }
     
     private void updateUserLabels(IT empAccount) {
-         if (empAccount == null) {
-        System.err.println("Error: empAccount is null");
-        return;
-    }
+        if (empAccount == null) {
+            System.err.println("Error: empAccount is null");
+            return;
+        }
 
         DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
-        // ✅ Ensure EmpDetails is not null before accessing its properties
-        Person details = empAccount.getEmpDetails();
-        if (details == null) {
-            System.err.println("Warning: EmpDetails is null for " + empAccount.getEmpUserName());
-            return;
+        // ✅ Check if EmpDetails is null before accessing its properties
+        if (empAccount.getEmpDetails() != null) {
+            Person empDetails = empAccount.getEmpDetails();
+
+            String tin = empDetails.getEmpTIN() != null ? empDetails.getEmpTIN() : "";
+            String phone = empDetails.getEmpPhoneNumber() != null ? empDetails.getEmpPhoneNumber() : "";
+            String pagIbig = empDetails.getEmpPagibig() != 0 ? String.valueOf(empDetails.getEmpPagibig()) : "";
+            String philhealth = empDetails.getEmpPhilHealth() != 0 ? String.valueOf(empDetails.getEmpPhilHealth()) : "";
+            String sss = empDetails.getEmpSSS() != null ? empDetails.getEmpSSS() : "";
+
+            usernameLabel.setText("@" + empAccount.getEmpUserName());
+            fullNameValue.setText(empDetails.getFormattedName());
+            fullNameValue2.setText(empDetails.getFormattedName());
+            empNumValue.setText(String.valueOf(empDetails.getEmpID()));
+            addressLabelValue.setText(empDetails.getEmpAddress() != null ? empDetails.getEmpAddress() : "");
+            phoneLabelValue.setText(phone);
+            tinLabelValue.setText(tin);
+            pagibigLabelValue.setText(pagIbig);
+            sssLabelValue.setText(sss);
+            philhealthLabelValue.setText(philhealth);
+
+            // ✅ Fixed incorrect method calls and ensured salary values are properly formatted
+            basicSalaryLabelValue.setText("PHP " + String.format("%.2f", empDetails.getEmpBasicSalary()));
+            riceLabelValue.setText("PHP " + String.format("%.2f", empDetails.getEmpRice()));
+            phoneAllowanceValue.setText("PHP " + String.format("%.2f", empDetails.getEmpPhone()));
+            clothingLabelValue.setText("PHP " + String.format("%.2f", empDetails.getEmpClothing()));
+            hourlyrateLabelValue.setText("PHP " + String.format("%.2f", empDetails.getEmpHourlyRate()));
+
+            // ✅ Payroll Labels
+            empIDPayLabelValue.setText(String.valueOf(empDetails.getEmpID()));
+            namePayLabelValue.setText(empDetails.getFormattedName());
+            hourlyRatePayLabelValue.setText(String.format("%.2f", empDetails.getEmpHourlyRate()));
+            ricePayLabelValue.setText(String.format("%.2f", empDetails.getEmpRice()));
+            phonePayLabelValue.setText(String.format("%.2f", empDetails.getEmpPhone()));
+            clothingPayLabelValue.setText(String.format("%.2f", empDetails.getEmpClothing()));
+
+            // ✅ Fixed incorrect reference for total allowance calculation
+            totalAllowPayLabelValue.setText(String.format("%.2f", SalaryCalculation.getTotalAllowance(empDetails)));
+            basicSalaryPayLabelValue.setText(String.format("%.2f", empDetails.getEmpBasicSalary()));
+
+            // ✅ Check for supervisor existence before accessing
+            if (empDetails.getEmpImmediateSupervisor() != null) {
+                supervisorLabelValue.setText(empDetails.getEmpImmediateSupervisor().getFormattedName());
+            } else {
+                supervisorLabelValue.setText("N/A");
+            }
+
+            // ✅ Check for job position existence before accessing
+            if (empDetails.getEmpPosition() != null) {
+                positionLabelValue.setText(empDetails.getEmpPosition().getPosition());
+            } else {
+                positionLabelValue.setText("N/A");
+            }
+
+            // ✅ Check for employment status existence before accessing
+            if (empDetails.getEmpStatus() != null) {
+                statusLabelValue.setText(empDetails.getEmpStatus().getStatus());
+            } else {
+                statusLabelValue.setText("N/A");
+            }
+
+            // ✅ Check for birthday existence before formatting
+            if (empDetails.getEmpBirthday() != null) {
+                String formattedBirthday = formatter.format(empDetails.getEmpBirthday());
+                bdayLabelValue.setText(formattedBirthday);
+                birthdayPayLabelValue.setText(formattedBirthday);
+            } else {
+                bdayLabelValue.setText("N/A");
+                birthdayPayLabelValue.setText("N/A");
+            }
         }
-
-        // ✅ Ensure PayrollDetails is not null before accessing its properties
-        Finance payrollDetails = empAccount.getPayrollDetails();
-        if (payrollDetails == null) {
-            System.err.println("Warning: PayrollDetails is null for " + empAccount.getEmpUserName());
-            return;
-        }
-
-        // ✅ Retrieve EmpDetails safely
-        String tin = details.getEmpTIN() != null ? details.getEmpTIN() : "N/A";
-        String phone = details.getEmpPhoneNumber() != null ? details.getEmpPhoneNumber() : "N/A";
-        String pagIbig = details.getEmpPagibig() != 0 ? String.valueOf(details.getEmpPagibig()) : "N/A";
-        String philhealth = details.getEmpPhilHealth() != 0 ? String.valueOf(details.getEmpPhilHealth()) : "N/A";
-        String sss = details.getEmpSSS() != null ? details.getEmpSSS() : "N/A";
-
-        usernameLabel.setText("@" + (empAccount.getEmpUserName() != null ? empAccount.getEmpUserName() : "Unknown"));
-        fullNameValue.setText(details.getFormattedName() != null ? details.getFormattedName() : "N/A");
-        fullNameValue2.setText(details.getFormattedName() != null ? details.getFormattedName() : "N/A");
-        empNumValue.setText(String.valueOf(empAccount.getEmpID()));
-        empIDLabelValue.setText(String.valueOf(empAccount.getEmpID()));
-        addressLabelValue.setText(details.getEmpAddress() != null ? details.getEmpAddress() : "N/A");
-        phoneLabelValue.setText(phone);
-        tinLabelValue.setText(tin);
-        pagibigLabelValue.setText(pagIbig);
-        sssLabelValue.setText(sss);
-        philhealthLabelValue.setText(philhealth);
-
-        if (details.getEmpImmediateSupervisor() != null) {
-            supervisorLabelValue.setText(details.getEmpImmediateSupervisor().getFormattedName());
-        } else {
-            supervisorLabelValue.setText("No Supervisor Assigned");
-        }
-
-        if (details.getEmpPosition() != null) {
-            positionLabelValue.setText(details.getEmpPosition().getPosition());
-            positionPayLabelValue.setText(details.getEmpPosition().getPosition()); // ✅ Merged redundant check
-        } else {
-            positionLabelValue.setText("No Position Assigned");
-            positionPayLabelValue.setText("No Position Assigned");
-        }
-
-        if (details.getEmpStatus() != null) {
-            statusLabelValue.setText(details.getEmpStatus().getStatus());
-            statusPayLabelValue.setText(details.getEmpStatus().getStatus()); // ✅ Merged redundant check
-        } else {
-            statusLabelValue.setText("No Status Available");
-            statusPayLabelValue.setText("No Status Available");
-        }
-
-        if (details.getEmpBirthday() != null) {
-            String formattedBday = formatter.format(details.getEmpBirthday());
-            bdayLabelValue.setText(formattedBday);
-            birthdayPayLabelValue.setText(formattedBday);
-        } else {
-            bdayLabelValue.setText("N/A");
-            birthdayPayLabelValue.setText("N/A");
-        }
-
-        /// ✅ Payroll Details
-        basicSalaryLabelValue.setText("PHP " + payrollDetails.getEmpBasicSalary());
-        hourlyrateLabelValue.setText("PHP " + payrollDetails.getEmpHourlyRate());
-        biMonthlyTField.setText("PHP " + payrollDetails.getEmpMonthlyRate());
-        riceLabelValue.setText("PHP " + payrollDetails.getEmpRice());
-        phoneAllowanceValue.setText("PHP " + payrollDetails.getEmpPhone());
-        clothingLabelValue.setText("PHP " + payrollDetails.getEmpClothing());
    
     }
     private void updatePayrollEmpLabels(IT empAccount){
@@ -219,12 +219,12 @@ public class HRDashboard extends javax.swing.JFrame {
         empIDPayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpID()));
         namePayLabelValue.setText(empAccount.getEmpDetails().getFormattedName());
         
-        hourlyRatePayLabelValue.setText(String.valueOf(empAccount.getPayrollDetails().getEmpHourlyRate()));
-        ricePayLabelValue.setText(String.valueOf(empAccount.getPayrollDetails().getEmpRice()));
-        phonePayLabelValue.setText(String.valueOf(empAccount.getPayrollDetails().getEmpPhone()));
-        clothingPayLabelValue.setText(String.valueOf(empAccount.getPayrollDetails().getEmpClothing()));
-        totalAllowPayLabelValue.setText(String.valueOf(SalaryCalculation.getTotalAllowance(empAccount.getPayrollDetails())));
-        basicSalaryPayLabelValue.setText(String.valueOf(empAccount.getPayrollDetails().getEmpBasicSalary()));
+        hourlyRatePayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpHourlyRate()));
+        ricePayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpRice()));
+        phonePayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpPhone()));
+        clothingPayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpClothing()));
+        totalAllowPayLabelValue.setText(String.valueOf(SalaryCalculation.getTotalAllowance(empAccount.getEmpDetails())));
+        basicSalaryPayLabelValue.setText(String.valueOf(empAccount.getEmpDetails().getEmpBasicSalary()));
     }
     
     private void updatePayrollLabels(List<Employee> employeeHours){
@@ -2243,6 +2243,12 @@ public class HRDashboard extends javax.swing.JFrame {
         addressTField.setText(empDetails.getEmpAddress());
         birthdayTField.setText(empDetails.getFormattedBirthday());
         phoneTField.setText(String.valueOf(empDetails.getEmpPhoneNumber()));
+        salaryTField.setText(String.valueOf(empDetails. getEmpBasicSalary()));
+        hourlyTField.setText(String.valueOf(empDetails.getEmpHourlyRate()));
+        biMonthlyTField.setText(String.valueOf(empDetails.getEmpMonthlyRate()));
+        riceTField.setText(String.valueOf(empDetails.getEmpRice()));
+        phoneAllowTField.setText(String.valueOf(empDetails.getEmpPhone()));
+        clothingTField.setText(String.valueOf(empDetails.getEmpClothing()));
 
         
         statusDropdown.setSelectedIndex(0);
@@ -2260,16 +2266,7 @@ public class HRDashboard extends javax.swing.JFrame {
         
         IT empAccount = empAccountService.getByEmpID(empID);
         usernameTField.setText(empAccount.getEmpUserName());
-        passwordTField.setText(empAccount.getEmpPassword());
-        
-        Finance payrollDetails = payrollService.getByEmpID(empID);
-        salaryTField.setText(String.valueOf(payrollDetails. getEmpBasicSalary()));
-        hourlyTField.setText(String.valueOf(payrollDetails.getEmpHourlyRate()));
-        biMonthlyTField.setText(String.valueOf(payrollDetails.getEmpMonthlyRate()));
-        riceTField.setText(String.valueOf(payrollDetails.getEmpRice()));
-        phoneAllowTField.setText(String.valueOf(payrollDetails.getEmpPhone()));
-        clothingTField.setText(String.valueOf(payrollDetails.getEmpClothing()));
-        
+        passwordTField.setText(empAccount.getEmpPassword());   
 
     }
     

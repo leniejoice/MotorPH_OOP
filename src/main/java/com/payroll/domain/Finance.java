@@ -5,23 +5,19 @@
 package com.payroll.domain;
 
 import java.util.Date;
+import com.payroll.subdomain.EmployeePosition;
+import com.payroll.subdomain.EmployeeStatus;
+import com.payroll.domain.Finance;
 
 /**
  *
  * @author leniejoice
  */
 public class Finance extends Person {
-    
-    private double empBasicSalary;
-    private double empRice;
-    private double empPhone;
-    private double empClothing;
-    private double empMonthlyRate;
-    private double empHourlyRate;
-    
+      
     
     public Finance() {
-        super(0, "", "", "", null, "", "", "", 0, 0, null, null, null); 
+        super(0, "", "", "", null, "", "", "", 0, 0, null, null, null,0,0,0,0,0,0); 
         // Initialize `Person` fields with default values
     }
     
@@ -32,64 +28,22 @@ public class Finance extends Person {
                    double empPhone, double empClothing, double empMonthlyRate, double empHourlyRate) {
         // Call Parent (Person) Constructor
         super(empID, lastName, firstName, empAddress, empBirthday, empPhoneNumber, empSSS, 
-              empTIN, empPhilHealth, empPagibig, empImmediateSupervisor, empStatus, empPosition);
+              empTIN, empPhilHealth, empPagibig, empImmediateSupervisor, empStatus, empPosition,
+              empBasicSalary,empRice,empPhone,empClothing, empMonthlyRate,empHourlyRate);
         
         // Initialize Finance-specific payroll details
-        this.empBasicSalary = empBasicSalary;
-        this.empRice = empRice;
-        this.empPhone = empPhone;
-        this.empClothing = empClothing;
-        this.empMonthlyRate = empMonthlyRate;
-        this.empHourlyRate = empHourlyRate;
+
+    }
+    
+    public int getEmpID() {
+        return empID;
+    }
+
+    public void setEmpID(int empID) {
+        this.empID = empID;
     }
     
     
-    public double getEmpBasicSalary() {
-        return empBasicSalary;
-    }
-
-    public double getEmpRice() {
-        return empRice;
-    }
-
-    public double getEmpPhone() {
-        return empPhone;
-    }
-
-    public double getEmpClothing() {
-        return empClothing;
-    }
-
-    public double getEmpMonthlyRate() {
-        return empMonthlyRate;
-    }
-
-    public double getEmpHourlyRate() {
-        return empHourlyRate;
-    }
-    
-    public void setEmpBasicSalary(double empBasicSalary) {
-        this.empBasicSalary = empBasicSalary;
-    }
-
-    public void setEmpRice(double empRice) {
-        this.empRice = empRice;
-    }
-
-    public void setEmpPhone(double empPhone) {
-        this.empPhone = empPhone;
-    }
-
-    public void setEmpClothing(double empClothing) {
-        this.empClothing = empClothing;
-    }
-
-    public void setEmpMonthlyRate(double empMonthlyRate) {
-        this.empMonthlyRate = empMonthlyRate;
-    }
-
-    public void setEmpHourlyRate(double empHourlyRate) {
-        this.empHourlyRate = empHourlyRate;
-    }
+   
    
 }

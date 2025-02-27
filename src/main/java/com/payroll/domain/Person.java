@@ -4,8 +4,8 @@
  */
 package com.payroll.domain;
 
-import com.payroll.domain.EmployeePosition;
-import com.payroll.domain.EmployeeStatus;
+import com.payroll.subdomain.EmployeePosition;
+import com.payroll.subdomain.EmployeeStatus;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,6 +28,12 @@ public abstract class Person {
     private String empTIN;
     private long empPhilHealth;
     private long empPagibig;
+    private double empBasicSalary;
+    private double empRice;
+    private double empPhone;
+    private double empClothing;
+    private double empMonthlyRate;
+    private double empHourlyRate;
    
     
  
@@ -36,7 +42,8 @@ public abstract class Person {
     public Person(int empID, String lastName, String firstName, String empAddress, Date empBirthday,
                   String empPhoneNumber, String empSSS, String empTIN, long empPhilHealth,
                   long empPagibig, Person empImmediateSupervisor, EmployeeStatus empStatus,
-                  EmployeePosition empPosition) { 
+                  EmployeePosition empPosition, double empBasicSalary, double empRice,
+                  double empPhone, double empClothing, double empMonthlyRate, double empHourlyRate) { 
         
         this.empID = empID;
         this.lastName = lastName;
@@ -51,6 +58,12 @@ public abstract class Person {
         this.empImmediateSupervisor = empImmediateSupervisor;
         this.empStatus = empStatus;
         this.empPosition = empPosition;
+        this.empBasicSalary = empBasicSalary;
+        this.empRice = empRice;
+        this.empPhone = empPhone;
+        this.empClothing = empClothing;
+        this.empMonthlyRate = empMonthlyRate;
+        this.empHourlyRate = empHourlyRate;
     }
     
     
@@ -159,6 +172,54 @@ public abstract class Person {
     
         public void setEmpPosition(EmployeePosition empPosition) {
         this.empPosition = empPosition;
+    }
+        
+     public double getEmpBasicSalary() {
+        return empBasicSalary;
+    }
+
+    public double getEmpRice() {
+        return empRice;
+    }
+
+    public double getEmpPhone() {
+        return empPhone;
+    }
+
+    public double getEmpClothing() {
+        return empClothing;
+    }
+
+    public double getEmpMonthlyRate() {
+        return empMonthlyRate;
+    }
+
+    public double getEmpHourlyRate() {
+        return empHourlyRate;
+    }
+    
+    public void setEmpBasicSalary(double empBasicSalary) {
+        this.empBasicSalary = empBasicSalary;
+    }
+
+    public void setEmpRice(double empRice) {
+        this.empRice = empRice;
+    }
+
+    public void setEmpPhone(double empPhone) {
+        this.empPhone = empPhone;
+    }
+
+    public void setEmpClothing(double empClothing) {
+        this.empClothing = empClothing;
+    }
+
+    public void setEmpMonthlyRate(double empMonthlyRate) {
+        this.empMonthlyRate = empMonthlyRate;
+    }
+
+    public void setEmpHourlyRate(double empHourlyRate) {
+        this.empHourlyRate = empHourlyRate;
     }
 
     public String getFormattedName(){
